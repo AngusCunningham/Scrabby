@@ -26,6 +26,18 @@ public class Word implements Comparable {
         this.orientation = orientation;
     }
 
+    public Word(String word, int startSquare, char orientation) {
+        this.word = word;
+        this.locations = Utils.letterLocations(word, startSquare, orientation);
+        this.orientation = orientation;
+    }
+
+    public Word(String word, int startCol, int startRow, char orientation) {
+        this.word = word;
+        this.locations = Utils.letterLocations(word, startCol, startRow, orientation);
+        this.orientation = orientation;
+    }
+
     public Word(){}
 
     @Override

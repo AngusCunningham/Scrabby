@@ -3,11 +3,11 @@ package com.guscodes.scrabby;
 import java.util.*;
 
 public class LetterExtender {
-    private Board board;
+    private Square[] boardSquares;
     private Set<Word> wordsFound = new HashSet<>();
     private TrieNode rootNode;
-    public LetterExtender(Board currentBoard, DictHandler dictHandler) {
-        this.board = currentBoard;
+    public LetterExtender(Square[] boardSquares, DictHandler dictHandler) {
+        this.boardSquares = boardSquares;
         rootNode = dictHandler.getTrieRoot();
     }
 
@@ -18,59 +18,60 @@ public class LetterExtender {
         return this.wordsFound;
     }
 
-    private void extendAfter(TrieNode startNode, int startLocation, char orientation,
-                                    int originalStart, List<String> tray, String word) {
-        Square[] boardSquares = board.getSquares();
-        Square startSquare = boardSquares[startLocation];
+    private void extendAfter(TrieNode node, int location, char orientation,
+                                    int originalStart, List<String> tray, String partialWord) {
+
+        Square startSquare = boardSquares[location];
         String contents = String.valueOf(startSquare.getContents());
-        HashMap<String, TrieNode> children = startNode.getChildren();
+        HashMap<String, TrieNode> nextLetters = node.getChildren();
 
         // if square is empty
         if ("_".equals(contents)) {
 
-            // if this node is the end of a word
-            if (startNode.isTerminal()) {
-                Word newWordFound = new Word();
-                newWordFound.setWord(word);
-                newWordFound.setOrientation(orientation);
-                newWordFound.setLocations(Utils.letterLocations(word, originalStart, orientation));
+            // if this node is the end of a word in the trie
+            if (node.isTerminal()) {
+                Word newWordFound = new Word(partialWord, originalStart, orientation);
                 wordsFound.add(newWordFound);
             }
 
             // see if any words can continue from the square trying each of the remaining tray letters
             for (String letter : tray) {
-                if (children.keySet().contains(letter.toUpperCase())) {
-                    TrieNode newNode = children.get(letter.toUpperCase());
+                if (nextLetters.keySet().contains(letter.toUpperCase())) {
+                    TrieNode newNode = nextLetters.get(letter.toUpperCase());
                     List<String> newTray = new ArrayList<>(tray);
                     newTray.remove(letter);
-                    String newWord = word + letter;
+                    String newWord = partialWord + letter;
                     try {
-                        int nextLocation = Utils.nextLocation(startLocation, orientation);
+                        int nextLocation = Utils.nextLocation(location, orientation);
                         extendAfter(newNode, nextLocation, orientation, originalStart, newTray, newWord);
                     }
                     catch (IndexOutOfBoundsException e) {
-                        // the edge of the board has been reached, so the nextLocation function will throw an exception
-                        // no need to do anything, just let the loop continue to the next letter
+                        // next square would be the edge of the board so the word must end here
+                        if (newNode.isTerminal()) {
+                            Word newWordFound = new Word(newWord, originalStart, orientation);
+                            wordsFound.add(newWordFound);
+                        }
                     }
                     catch (IllegalArgumentException e) {
                         System.out.println("Orientation used in LetterExtender must only be 'H' or 'V'");
                     }
-
                 }
             }
         }
 
         // if square has already been played, check if the tile in it can add to the word at all
-        else if (children.keySet().contains(contents.toUpperCase())) {
-            TrieNode newNode = children.get(contents.toUpperCase());
-            String newWord = word + contents;
+        else if (nextLetters.keySet().contains(contents.toUpperCase())) {
+            TrieNode newNode = nextLetters.get(contents.toUpperCase());
+            String newWord = partialWord + contents;
             try {
-                int nextLocation = Utils.nextLocation(startLocation, orientation);
+                int nextLocation = Utils.nextLocation(location, orientation);
                 extendAfter(newNode, nextLocation, orientation, originalStart, tray, newWord);
             }
             catch (IndexOutOfBoundsException e) {
-                // the edge of the board has been reached, so the nextLocation function will throw an exception
-                // no need to do anything, just let the loop continue to the next letter
+                if (newNode.isTerminal()) {
+                    Word newWordFound = new Word(newWord, originalStart, orientation);
+                    wordsFound.add(newWordFound);
+                }
             }
             catch (IllegalArgumentException e) {
                 System.out.println("Orientation used in LetterExtender must only be 'H' or 'V'");

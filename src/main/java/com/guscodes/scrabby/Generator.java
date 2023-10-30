@@ -16,7 +16,7 @@ public class Generator {
         this.dictionary = dictHandler.getDictionary();
         this.validator = validator;
         this.scorer = scorer;
-        this.letEx = new LetterExtender(board, dictHandler);
+        this.letEx = new LetterExtender(board.getSquares(), dictHandler);
     }
 
     public Set<Word> getSuggestions(String tray) {
@@ -24,7 +24,6 @@ public class Generator {
         Set<Word> suggestedWords = new HashSet<>();
         Set<String> allTrays = trayVersions(tray);
         for (String trayVersion : allTrays) {
-            //System.out.println("Tray version is " + trayVersion);
             List<String> trayLetters = new ArrayList<>();
             for (String letter : trayVersion.split("")) {
                 trayLetters.add(letter);
@@ -38,6 +37,12 @@ public class Generator {
 
             for (int location : allPossibleStarts) {
                 suggestedWords.addAll(letEx.getLegalMovesAnchoredAt(location, trayLetters));
+            }
+        }
+
+        for (Word word : suggestedWords) {
+            if (word.getWord().equals("LEER")) {
+                System.out.println(word.getWord() + Arrays.toString(word.getLocations()));
             }
         }
 
