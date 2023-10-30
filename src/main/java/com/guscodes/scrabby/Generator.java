@@ -29,13 +29,7 @@ public class Generator {
                 trayLetters.add(letter);
             }
 
-            Set<Integer> allPossibleStarts = new HashSet<>();
-
-            for (int location : board.getAccessibleLocations()) {
-                allPossibleStarts.addAll(getAllStartLocationsFrom(location));
-            }
-
-            for (int location : allPossibleStarts) {
+            for (int location = 0; location < 225; location++ ) {
                 suggestedWords.addAll(letEx.getLegalMovesAnchoredAt(location, trayLetters));
             }
         }
@@ -88,33 +82,6 @@ public class Generator {
 
         return trayVersions;
     }
-
-    private Set<Integer> getAllStartLocationsFrom(int anchorLocation) {
-        Set<Integer> allStartLocations = new HashSet<>();
-        allStartLocations.add(anchorLocation);
-        int thisLocation = anchorLocation;
-        while (true) {
-            try {
-                thisLocation = Utils.lastLocation(thisLocation, 'H');
-                allStartLocations.add(thisLocation);
-            }
-            catch (IndexOutOfBoundsException e) {
-                break;
-            }
-        }
-        thisLocation = anchorLocation;
-        while (true) {
-            try {
-                thisLocation = Utils.lastLocation(thisLocation, 'V');
-                allStartLocations.add(thisLocation);
-            }
-            catch (IndexOutOfBoundsException e) {
-                break;
-            }
-        }
-        return allStartLocations;
-    }
-
 
     private Set<Word> filterValidateAndScore(Set<Word> potentialWords) {
         Set<Word> checkedWords = new HashSet<>();
