@@ -122,7 +122,16 @@ public class Main {
                 }
 
                 //generate suggestions based on tray
-                Set<Word> possibleWords = generator.getSuggestions(tray);
+                Set<Word> possibleWords;
+                try {
+                    System.out.println("Scrabby is thinking.....");
+                    possibleWords = generator.getSuggestions(tray);
+                }
+                catch (IllegalStateException e) {
+                    System.out.println("Too many blanks in the tray given, maximum of two!");
+                    continue;
+                }
+
                 List<Word> sortedPossibleWords = Utils.sortWordsByScore(possibleWords);
 
                 //display top 10 suggestions sorted by highest score last

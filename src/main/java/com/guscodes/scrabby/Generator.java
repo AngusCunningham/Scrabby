@@ -40,12 +40,12 @@ public class Generator {
         //TODO: does the word take useful letters from the tray which could be kept for later?
 
         long endTime = System.nanoTime();
-        long elapsedTimeInSeconds = (endTime - startTime) / 1000000000;
-        System.out.printf("%d plays analysed in %d seconds\n", suggestedWords.size(), elapsedTimeInSeconds);
+        float elapsedTimeInSeconds = (endTime - startTime) / 1000000000;
+        System.out.printf("%d plays analysed in %f seconds\n", suggestedWords.size(), elapsedTimeInSeconds);
         return scoredAndValidatedSuggestions;
     }
 
-    private Set<String> trayVersions(String tray) {
+    private Set<String> trayVersions(String tray) throws IllegalStateException {
         Set<String> trayVersions = new HashSet<>();
         int blankCount = 0;
         for (String letter : tray.split("")) {
