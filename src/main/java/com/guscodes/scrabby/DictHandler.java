@@ -6,6 +6,8 @@ import java.util.*;
 public class DictHandler {
     private Set<String> dictionary = buildDictionary();
     private Trie dictTrie = new Trie(dictionary);
+
+
     public Set<String> getDictionary() {
         return this.dictionary;
     }
