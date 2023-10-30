@@ -40,12 +40,6 @@ public class Generator {
             }
         }
 
-        for (Word word : suggestedWords) {
-            if (word.getWord().equals("LEER")) {
-                System.out.println(word.getWord() + Arrays.toString(word.getLocations()));
-            }
-        }
-
         Set<Word> scoredAndValidatedSuggestions = filterValidateAndScore(suggestedWords);
 
         //TODO: each word and the squares it can open up can be added later

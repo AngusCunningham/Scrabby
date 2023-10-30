@@ -15,21 +15,6 @@ public class Main {
         String welcomeString = "\nWelcome to Scrabby, your scrabble word finder\n";
         System.out.println(welcomeString);
 
-        Word socket = new Word();
-        socket.setWord("SOCKET");
-        socket.setOrientation('V');
-        socket.setLocations(Utils.letterLocations("SOCKET", 112, 'V'));
-        board.addWord(socket);
-
-        Word crack = new Word("CRACK", 4, 9, 'H');
-        board.addWord(crack);
-
-        Word crated = new Word("CRATED", 4, 9, 'V');
-        board.addWord(crated);
-
-        Word dead = new Word("DEAD", 4, 14, 'H');
-        board.addWord(dead);
-
         //begin main loop of program
         while (true) {
 
