@@ -1,5 +1,6 @@
 package com.guscodes.scrabby;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -12,7 +13,7 @@ public class Word implements Comparable {
     private int rating;
 
     private char orientation;
-    private List<String> lettersUsedFromTray;
+    private List<String> lettersUsedFromTray = new ArrayList<>();
 
     public Word(String word, int score, int[] locations) {
         this.locations = locations;
@@ -93,6 +94,14 @@ public class Word implements Comparable {
 
     public void setRating(int rating) {
         this.rating = rating;
+    }
+
+    public void addLetterFromTray(String letterFromTray) {
+        this.lettersUsedFromTray.add(letterFromTray);
+    }
+
+    public List<String> getTrayLettersUsed() {
+        return lettersUsedFromTray;
     }
 
     @Override

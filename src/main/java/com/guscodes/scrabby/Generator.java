@@ -39,6 +39,15 @@ public class Generator {
         //TODO: each word and the squares it can open up can be added later
         //TODO: does the word take useful letters from the tray which could be kept for later?
 
+        /*
+        for (Word word : scoredAndValidatedSuggestions) {
+            List<String> lettersUsedFromTray = word.getTrayLettersUsed();
+            for (String letter : lettersUsedFromTray) {
+                
+            }
+        }
+        */
+
         long endTime = System.nanoTime();
         float elapsedTimeInSeconds = (endTime - startTime) / 1000000000;
         System.out.printf("%d plays analysed in %f seconds\n", suggestedWords.size(), elapsedTimeInSeconds);

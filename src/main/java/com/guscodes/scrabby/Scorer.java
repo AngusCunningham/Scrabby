@@ -85,8 +85,8 @@ public class Scorer {
             int currentLocation = locations[index];
             //System.out.printf("Tile score: %d\n", letterScore);
             if (!(board.getPlayedLocations().contains(currentLocation))) {
-                //System.out.printf("Tile to be played on blank location: %s\n", Arrays.toString(Utils.sCoordinates(currentLocation)));
                 newLettersAdded += 1;
+                wordWithLocations.addLetterFromTray(String.valueOf(wordLetters[index]));
                 if (Main.arrayContainsInt(doubleLetters, currentLocation)) {
                     letterScore *= 2;
                 }
