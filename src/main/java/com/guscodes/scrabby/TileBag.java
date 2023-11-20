@@ -47,7 +47,7 @@ public class TileBag {
                 int remainingQuantity = lettersRemaining.get(letter);
                 if (remainingQuantity > 0) {
                     int newRemainingQuantity = remainingQuantity - 1;
-                    System.out.println(letter + remainingQuantity + newRemainingQuantity);
+                    //System.out.println(letter + remainingQuantity + newRemainingQuantity);
                     lettersRemaining.put(letter, newRemainingQuantity);
                     return letter;
                 }

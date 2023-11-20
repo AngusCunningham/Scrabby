@@ -43,7 +43,7 @@ public class Main {
                 String testTray = "";
 
                 while (true) {
-                    System.out.println(controlTray);
+                    //System.out.println(controlTray);
                     // control plays first to give max advantage
                     // while tray is not full, get random letter from bag
                     int controlLettersToTake = Utils.MAX_TRAY_SIZE - controlTray.length();
@@ -147,7 +147,7 @@ public class Main {
                     }
 
                     testGameScore += bestTestPlay.getScore();
-                    board.show('L');
+                    //board.show('L');
                 }
 
                 controlTotalScore += controlGameScore;
@@ -155,22 +155,23 @@ public class Main {
 
                 if (controlGameScore > testGameScore) gamesWonByControl += 1;
                 else if (controlGameScore < testGameScore) gamesWonByTest += 1;
-                else drawnGames += 1;
 
                 board.show('L');
-                System.out.printf("Game %d of %d: control score = %d, test score = %d", iterationsPlayed,
+                System.out.printf("Game %d of %d: control score = %d, test score = %d\n", iterationsPlayed + 1,
                         maxIterations, controlGameScore, testGameScore);
                 iterationsPlayed += 1;
             }
             System.out.println("Iterations Complete!");
             float controlAverageScore = (float) controlTotalScore / iterationsPlayed;
             float testAverageScore = (float) testTotalScore / iterationsPlayed;
-            float fractionGamesWonByControl;
-            float fractionGamesWonByTest;
+            float fractionGamesWonByControl = gamesWonByControl / iterationsPlayed;
+            float fractionGamesWonByTest = gamesWonByTest / iterationsPlayed;
             float fractionGamesDrawn;
             float averageWinMargin;
-
-            // display results to user
+            System.out.println("Test Average Score: " + testAverageScore);
+            System.out.println("Test Win Fraction: " + fractionGamesWonByTest);
+            System.out.println("Control Average Score: " + controlAverageScore);
+            System.out.println("Control Win Fraction: " + fractionGamesWonByControl);
         }
 
         else {
