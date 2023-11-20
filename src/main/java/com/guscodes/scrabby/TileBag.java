@@ -55,6 +55,15 @@ public class TileBag {
         }
     }
 
+    public void returnTileToBag(char letter) throws IllegalArgumentException {
+        if (!(lettersRemaining.containsKey(letter))) {
+            throw new IllegalArgumentException("Letter does not exist in bag");
+        }
+        else {
+            lettersRemaining.put(letter, lettersRemaining.get(letter) + 1);
+        }
+    }
+
     private boolean isEmpty() {
         for (Character tile : lettersRemaining.keySet()) {
             if (lettersRemaining.get(tile) > 0) return false;

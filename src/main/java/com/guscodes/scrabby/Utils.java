@@ -136,7 +136,7 @@ public class Utils {
         }
     }
 
-    public static List<Word> sortWordsByScore(Collection<Word> wordsToSort) {
+    public static List<Word> sortWordsByRating(Collection<Word> wordsToSort) {
         List<Word> sortedWords = new ArrayList<>(wordsToSort);
         Collections.sort(sortedWords);
         return sortedWords;

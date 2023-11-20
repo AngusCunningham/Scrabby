@@ -21,7 +21,7 @@ public class Generator {
         this.validator = validator;
         this.scorer = scorer;
         this.letEx = new LetterExtender(board.getSquares(), dictHandler);
-        //this.letterFrequencies = dictHandler.getLetterFreqs();
+        this.letterFrequencies = dictHandler.getLetterFreqs();
         this.useExperimentalFeatures = useExperimentalFeatures;
     }
 
@@ -48,15 +48,16 @@ public class Generator {
         if (useExperimentalFeatures) {
             // is the word using the least useful letters from the tray first?
             for (Word word : scoredAndValidatedSuggestions) {
-                List<String> lettersUsedFromTray = word.getTrayLettersUsed();
-                float letterCommonality = 0;
-                for (String letter : lettersUsedFromTray) {
-                    float letterFrequencyInDictionary = letterFrequencies.get(letter.toCharArray()[0]);
-                    letterCommonality += letterFrequencyInDictionary;
+                float commonalityScore = 0;
+                List<String> trayLettersUsed = word.getTrayLettersUsed();
+                for (String letter : trayLettersUsed) {
+                    char letterChar = Character.toUpperCase(letter.charAt(0));
+                    commonalityScore += letterFrequencies.get(letterChar);
+                    //System.out.println("Commonality score of " + word.getWord() + " : " + commonalityScore);
+                    //System.out.println(word.getScore());
                 }
-                //System.out.printf("for word %s, commonality is %f, rating is %f\n", word.getWord(), letterCommonality, letterCommonality * word.getRating());
-                word.setRating(Math.round(word.getRating() / letterCommonality));
-                // todo: sort out common word preference factor
+
+                word.setRating(Math.round((float) word.getScore() - ((float) 1.5 * commonalityScore)));
             }
 
             //TODO: each word and the squares it can open up can be added later
@@ -66,7 +67,8 @@ public class Generator {
 
         long endTime = System.nanoTime();
         float elapsedTimeInSeconds = (endTime - startTime) / 1000000000;
-        System.out.printf("%d plays analysed in %f seconds\n", suggestedWords.size(), elapsedTimeInSeconds);
+        System.out.printf("%d plays analysed in %f seconds, %d valid plays found\n", suggestedWords.size(),
+                                                elapsedTimeInSeconds, scoredAndValidatedSuggestions.size());
         return scoredAndValidatedSuggestions;
     }
 

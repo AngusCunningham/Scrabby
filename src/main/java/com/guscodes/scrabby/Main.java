@@ -16,6 +16,7 @@ public class Main {
         // check if suggesting mode or playing mode
         String mode = mainThread.getModeFromUser();
         if (mode.equals("D")) {
+            //todo: refilling tray immediately after clearing letters from it, to have accurate minus scores in win/pass conditions
 
             int maxIterations = mainThread.getIterationCountFromUser();
 
@@ -32,7 +33,7 @@ public class Main {
                 Validator validator = new Validator(board, dictHandler.getDictionary());
 
                 Generator controlSubject = new Generator(board, dictHandler, validator, scorer, false);
-                Generator testSubject = new Generator(board, dictHandler, validator, scorer, false);
+                Generator testSubject = new Generator(board, dictHandler, validator, scorer, true);
 
                 int controlGameScore = 0;
                 int testGameScore = 0;
@@ -42,10 +43,14 @@ public class Main {
                 String controlTray = "";
                 String testTray = "";
 
+                int consecutiveTestScoresZero = 0;
+                int consecutiveControlScoresZero = 0;
+
                 while (true) {
                     //System.out.println(controlTray);
                     // control plays first to give max advantage
                     // while tray is not full, get random letter from bag
+                    //System.out.println("\n\nControl subject starts playing");
                     int controlLettersToTake = Utils.MAX_TRAY_SIZE - controlTray.length();
                     int controlLettersTaken = 0;
                     while (controlLettersTaken < controlLettersToTake) {
@@ -58,6 +63,8 @@ public class Main {
                             break;
                         }
                     }
+
+                    //System.out.println("Control Tray: " + controlTray);
                     if (controlTray.length() == 0){
                         // game is over, subtract Test's remaining tile scores from their total score
                         char[] testRemainingTiles = testTray.toCharArray();
@@ -72,31 +79,36 @@ public class Main {
 
                     Set<Word> controlSuggestions = controlSubject.getSuggestions(controlTray);
                     if (controlSuggestions.size() == 0) {
-                        // game is over, subtract control's remaining tile scores from their total score
-                        char[] controlRemainingTiles = controlTray.toCharArray();
-                        int controlMinusScore = 0;
-                        for (char tile : controlRemainingTiles) {
-                            controlMinusScore += scorer.getLetterScore(tile);
+                        // if there are no words possible from the current tray/board
+                        //todo: return tiles to bag and skip turn
+                        for (char tile : controlTray.toCharArray()) {
+                            tileBag.returnTileToBag(tile);
                         }
-
-                        controlGameScore -= controlMinusScore;
-                        break;
-                    }
-                    List<Word> sortedControlSuggestions = Utils.sortWordsByScore(controlSuggestions);
-                    Word bestControlPlay = sortedControlSuggestions.get(sortedControlSuggestions.size() - 1);
-                    board.addWord(bestControlPlay);
-
-                    List<String> controlTrayLettersUsed = bestControlPlay.getTrayLettersUsed();
-                    for (String letter : controlTrayLettersUsed) {
-                        controlTray = controlTray.replaceFirst(letter, "");
-                        if (Character.isLowerCase(letter.charAt(0))) {
-                            controlTray = controlTray.replaceFirst("~", "");
-                        }
+                        controlTray = "";
+                        consecutiveControlScoresZero += 1;
                     }
 
-                    controlGameScore += bestControlPlay.getScore();
+                    else {
+                        List<Word> sortedControlSuggestions = Utils.sortWordsByRating(controlSuggestions);
+                        Word bestControlPlay = sortedControlSuggestions.get(sortedControlSuggestions.size() - 1);
+                        board.addWord(bestControlPlay);
 
+                        List<String> controlTrayLettersUsed = bestControlPlay.getTrayLettersUsed();
+                        for (String letter : controlTrayLettersUsed) {
+                            controlTray = controlTray.replaceFirst(letter, "");
+                            if (Character.isLowerCase(letter.charAt(0))) {
+                                controlTray = controlTray.replaceFirst("~", "");
+                            }
+                        }
+
+                        controlGameScore += bestControlPlay.getScore();
+                        consecutiveControlScoresZero = 0;
+                    }
+
+
+                    // #########################################################################################
                     // test plays second
+                    //System.out.println("\n\nTest subject starts playing");
                     int testLettersToTake = Utils.MAX_TRAY_SIZE - testTray.length();
                     int testLettersTaken = 0;
                     while (testLettersTaken < testLettersToTake) {
@@ -109,6 +121,7 @@ public class Main {
                             break;
                         }
                     }
+                    //System.out.println("Test Tray: " + testTray);
 
                     if (testTray.length() == 0) {
                         // game is over, subtract control's remaining tile scores from their total score
@@ -124,52 +137,65 @@ public class Main {
 
                     Set<Word> testSuggestions = testSubject.getSuggestions(testTray);
                     if (testSuggestions.size() == 0) {
-                        // game is over, subtract Test's remaining tile scores from their total score
-                        char[] testRemainingTiles = testTray.toCharArray();
-                        int testMinusScore = 0;
-                        for (char tile : testRemainingTiles) {
-                            testMinusScore += scorer.getLetterScore(tile);
+                        // if there are no words possible from the current tray/board
+                        //todo: return tiles to bag and skip turn
+                        for (char tile : testTray.toCharArray()) {
+                            tileBag.returnTileToBag(tile);
                         }
+                        consecutiveTestScoresZero += 1;
 
-                        testGameScore -= testMinusScore;
+                        testTray = "";
+
+                    }
+                    else {
+                        List<Word> sortedTestSuggestions = Utils.sortWordsByRating(testSuggestions);
+                        Word bestTestPlay = sortedTestSuggestions.get(sortedTestSuggestions.size() - 1);
+                        board.addWord(bestTestPlay);
+
+                        List<String> testTrayLettersUsed = bestTestPlay.getTrayLettersUsed();
+                        for (String letter : testTrayLettersUsed) {
+                            testTray = testTray.replaceFirst(letter, "");
+                            if (Character.isLowerCase(letter.charAt(0))) {
+                                testTray = testTray.replaceFirst("~", "");
+                            }
+                        }
+                        testGameScore += bestTestPlay.getScore();
+                        consecutiveTestScoresZero = 0;
+                    }
+
+                    if (consecutiveControlScoresZero > 2 && consecutiveTestScoresZero > 2) {
                         break;
                     }
-                    List<Word> sortedTestSuggestions = Utils.sortWordsByScore(testSuggestions);
-                    Word bestTestPlay = sortedTestSuggestions.get(sortedTestSuggestions.size() - 1);
-                    board.addWord(bestTestPlay);
-
-                    List<String> testTrayLettersUsed = bestTestPlay.getTrayLettersUsed();
-                    for (String letter : testTrayLettersUsed) {
-                        testTray = testTray.replaceFirst(letter, "");
-                        if (Character.isLowerCase(letter.charAt(0))) {
-                            testTray = testTray.replaceFirst("~", "");
-                        }
-                    }
-
-                    testGameScore += bestTestPlay.getScore();
-                    //board.show('L');
                 }
 
                 controlTotalScore += controlGameScore;
                 testTotalScore += testGameScore;
 
-                if (controlGameScore > testGameScore) gamesWonByControl += 1;
-                else if (controlGameScore < testGameScore) gamesWonByTest += 1;
+                if (controlGameScore > testGameScore) {
+                    System.out.println("Control won this game!");
+                    gamesWonByControl += 1;
+                }
+
+                else if (controlGameScore < testGameScore) {
+                    System.out.println("Test won this game!");
+                    gamesWonByTest += 1;
+                }
 
                 board.show('L');
                 System.out.printf("Game %d of %d: control score = %d, test score = %d\n", iterationsPlayed + 1,
                         maxIterations, controlGameScore, testGameScore);
                 iterationsPlayed += 1;
             }
-            System.out.println("Iterations Complete!");
+            System.out.println("\n\nIterations Complete!");
             float controlAverageScore = (float) controlTotalScore / iterationsPlayed;
             float testAverageScore = (float) testTotalScore / iterationsPlayed;
-            float fractionGamesWonByControl = gamesWonByControl / iterationsPlayed;
-            float fractionGamesWonByTest = gamesWonByTest / iterationsPlayed;
+            float fractionGamesWonByControl = (float) gamesWonByControl / iterationsPlayed;
+            float fractionGamesWonByTest = (float) gamesWonByTest / iterationsPlayed;
             float fractionGamesDrawn;
             float averageWinMargin;
             System.out.println("Test Average Score: " + testAverageScore);
             System.out.println("Test Win Fraction: " + fractionGamesWonByTest);
+            System.out.println();
             System.out.println("Control Average Score: " + controlAverageScore);
             System.out.println("Control Win Fraction: " + fractionGamesWonByControl);
         }
@@ -321,7 +347,7 @@ public class Main {
     }
 
     private void displaySuggestionsToUser(Set<Word> possibleWords) {
-        List<Word> sortedPossibleWords = Utils.sortWordsByScore(possibleWords);
+        List<Word> sortedPossibleWords = Utils.sortWordsByRating(possibleWords);
 
         //display top 10 suggestions sorted by highest score last
         int numberOfSuggestions = sortedPossibleWords.size();
