@@ -57,7 +57,7 @@ public class Generator {
                     //System.out.println(word.getScore());
                 }
 
-                word.setRating(Math.round((float) word.getScore() - ((float) 1.5 * commonalityScore)));
+                word.setRating(Math.round((float) word.getScore() - ((float) 1 * commonalityScore)));
             }
 
             //TODO: each word and the squares it can open up can be added later

@@ -33,7 +33,7 @@ public class Main {
                 Validator validator = new Validator(board, dictHandler.getDictionary());
 
                 Generator controlSubject = new Generator(board, dictHandler, validator, scorer, false);
-                Generator testSubject = new Generator(board, dictHandler, validator, scorer, true);
+                Generator testSubject = new Generator(board, dictHandler, validator, scorer, false);
 
                 int controlGameScore = 0;
                 int testGameScore = 0;
@@ -92,6 +92,7 @@ public class Main {
                         List<Word> sortedControlSuggestions = Utils.sortWordsByRating(controlSuggestions);
                         Word bestControlPlay = sortedControlSuggestions.get(sortedControlSuggestions.size() - 1);
                         board.addWord(bestControlPlay);
+                        System.out.println("Word rating: " + bestControlPlay.getRating());
 
                         List<String> controlTrayLettersUsed = bestControlPlay.getTrayLettersUsed();
                         for (String letter : controlTrayLettersUsed) {
@@ -151,6 +152,7 @@ public class Main {
                         List<Word> sortedTestSuggestions = Utils.sortWordsByRating(testSuggestions);
                         Word bestTestPlay = sortedTestSuggestions.get(sortedTestSuggestions.size() - 1);
                         board.addWord(bestTestPlay);
+                        System.out.println("Word rating: " + bestTestPlay.getRating());
 
                         List<String> testTrayLettersUsed = bestTestPlay.getTrayLettersUsed();
                         for (String letter : testTrayLettersUsed) {
