@@ -1,0 +1,123 @@
+package com.guscodes.scrabby;
+
+import java.util.List;
+import java.util.Set;
+
+public class Diagnostic {
+    Board board = new Board(dictHandler);
+    Scorer scorer = new Scorer(board);
+    Validator validator = new Validator(board, dictHandler.getDictionary());
+
+    Generator controlSubject = new Generator(board, dictHandler, validator, scorer, false);
+    Generator testSubject = new Generator(board, dictHandler, validator, scorer, false);
+
+    int controlGameScore = 0;
+    int testGameScore = 0;
+
+    TileBag tileBag = new TileBag();
+
+    String controlTray = "";
+    String testTray = "";
+    private void turn(boolean isTest) {
+        // a turn for a player
+
+        String tray;
+        int score;
+        String playerName;
+        Generator thisGenerator;
+
+        int otherScore;
+        String otherTray;
+
+        if (isTest) {
+            tray = testTray;
+            score = testGameScore;
+            playerName = "TEST";
+            otherScore = controlGameScore;
+            otherTray = controlTray;
+            thisGenerator = testSubject;
+        }
+        else {
+            tray = controlTray;
+            score = controlGameScore;
+            playerName = "CONTROL";
+            otherScore = testGameScore;
+            otherTray = testTray;
+            thisGenerator = controlSubject;
+        }
+
+        // while tray is not full, get random letter from bag
+        int lettersToTake = Utils.MAX_TRAY_SIZE - tray.length();
+        int lettersTaken = 0;
+        while (lettersTaken < lettersToTake) {
+            try {
+                tray += this.tileBag.getLetter();
+                lettersTaken += 1;
+            }
+            catch (IllegalStateException e) {
+                // tile bag is empty, no more letters can be taken
+                break;
+            }
+        }
+
+        System.out.printf("%s with tray: %s\n", playerName, tray);
+
+        if (tray.length() == 0){
+            // game is over, subtract opponent's remaining tile scores from their total score
+            char[] otherRemainingTiles = otherTray.toCharArray();
+            int otherMinusScore = 0;
+            for (char tile : otherRemainingTiles) {
+                otherMinusScore += scorer.getLetterScore(tile);
+            }
+
+            otherScore -= otherMinusScore;
+            //todo: end here
+        }
+
+        else {
+            // some letters are still in the current player's tray
+            Set<Word> suggestions = thisGenerator.getSuggestions(tray);
+
+            if (suggestions.size() == 0) {
+                // game is over, subtract this player's remaining tile scores from their total score
+                char[] remainingTiles = tray.toCharArray();
+                int minusScore = 0;
+                for (char tile : remainingTiles) {
+                    minusScore += scorer.getLetterScore(tile);
+                }
+
+                score -= minusScore;
+                //todo: improve this
+            }
+
+            else {
+                // some suggestions have been found
+                List<Word> sortedSuggestions = Utils.sortWordsByScore(suggestions);
+                Word bestPlay = sortedSuggestions.get(sortedSuggestions.size() - 1);
+                board.addWord(bestPlay);
+
+                // make sure to remove letters used from the tray
+                List<String> trayLettersUsed = bestPlay.getTrayLettersUsed();
+                for (String letter : trayLettersUsed) {
+                    tray = tray.replaceFirst(letter, "");
+                }
+
+                score += bestPlay.getScore();
+            }
+        }
+
+        // restore values
+        if (isTest) {
+            testTray = tray;
+            testGameScore = score;
+            controlGameScore = otherScore;
+            controlTray = otherTray;
+        }
+        else {
+            controlTray = tray;
+            controlGameScore = score;
+            testGameScore = otherScore;
+            testTray = otherTray;
+        }
+    }
+}

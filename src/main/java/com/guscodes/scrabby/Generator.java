@@ -9,17 +9,20 @@ public class Generator {
     private Validator validator;
     private Scorer scorer;
     private LetterExtender letEx;
+    boolean useExperimentalFeatures;
 
     private HashMap<Character, Float> letterFrequencies;
 
-    public Generator(Board board, DictHandler dictHandler, Validator validator, Scorer scorer) {
+    public Generator(Board board, DictHandler dictHandler, Validator validator, Scorer scorer,
+                     boolean useExperimentalFeatures) {
         this.board = board;
         this.dictHandler = dictHandler;
         this.dictionary = dictHandler.getDictionary();
         this.validator = validator;
         this.scorer = scorer;
         this.letEx = new LetterExtender(board.getSquares(), dictHandler);
-        this.letterFrequencies = dictHandler.getLetterFreqs();
+        //this.letterFrequencies = dictHandler.getLetterFreqs();
+        this.useExperimentalFeatures = useExperimentalFeatures;
     }
 
     public Set<Word> getSuggestions(String tray) {
@@ -39,22 +42,27 @@ public class Generator {
 
         Set<Word> scoredAndValidatedSuggestions = filterValidateAndScore(suggestedWords);
 
+        // ########################################################################################################
 
-        //TODO: does the word take useful letters from the tray which could be kept for later?
-
-        for (Word word : scoredAndValidatedSuggestions) {
-            List<String> lettersUsedFromTray = word.getTrayLettersUsed();
-            float letterCommonality = 0;
-            for (String letter : lettersUsedFromTray) {
-                float letterFrequencyInDictionary = letterFrequencies.get(letter.toCharArray()[0]);
-                letterCommonality += letterFrequencyInDictionary;
+        //EXPERIMENTAL FEATURE ZONE
+        if (useExperimentalFeatures) {
+            // is the word using the least useful letters from the tray first?
+            for (Word word : scoredAndValidatedSuggestions) {
+                List<String> lettersUsedFromTray = word.getTrayLettersUsed();
+                float letterCommonality = 0;
+                for (String letter : lettersUsedFromTray) {
+                    float letterFrequencyInDictionary = letterFrequencies.get(letter.toCharArray()[0]);
+                    letterCommonality += letterFrequencyInDictionary;
+                }
+                //System.out.printf("for word %s, commonality is %f, rating is %f\n", word.getWord(), letterCommonality, letterCommonality * word.getRating());
+                word.setRating(Math.round(word.getRating() / letterCommonality));
+                // todo: sort out common word preference factor
             }
-            System.out.printf("for word %s, commonality is %f, rating is %f\n", word.getWord(), letterCommonality, letterCommonality * word.getRating());
-            word.setRating(Math.round(word.getRating() / letterCommonality));
-            // todo: sort out common word preference factor
+
+            //TODO: each word and the squares it can open up can be added later
         }
 
-        //TODO: each word and the squares it can open up can be added later
+        // #########################################################################################################
 
         long endTime = System.nanoTime();
         float elapsedTimeInSeconds = (endTime - startTime) / 1000000000;

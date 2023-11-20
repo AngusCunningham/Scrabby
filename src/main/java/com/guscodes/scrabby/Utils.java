@@ -142,4 +142,10 @@ public class Utils {
         return sortedWords;
     }
 
+    public static boolean arrayContainsInt(int[] array, int value) {
+        for (int item : array) {
+            if (value == item) return true;
+        }
+        return false;
+    }
 }

@@ -6,7 +6,7 @@ import java.util.*;
 public class DictHandler {
     private Set<String> dictionary = buildDictionary();
     private Trie dictTrie = new Trie(dictionary);
-    private HashMap<Character, Float> letterFreqs = letterFrequencyInDictionary(dictionary);
+    //private HashMap<Character, Float> letterFreqs = letterFrequencyInDictionary(dictionary);
 
     public Set<String> getDictionary() {
         return this.dictionary;
@@ -14,14 +14,15 @@ public class DictHandler {
     public Set<String> searchTrie(String prefix) {
         return dictTrie.search(prefix);
     }
+    /*
     public HashMap<Character, Float> getLetterFreqs() {
         return this.letterFreqs;
     }
-
+    */
     private Set<String> buildDictionary() {
         Set<String> scrabbleWords = new HashSet<>();
 
-        InputStream inputStream = getClass().getResourceAsStream("dict.txt");
+        InputStream inputStream = getClass().getResourceAsStream("Dict.txt");
         Scanner scanner = new Scanner(inputStream);
 
         //read line by line

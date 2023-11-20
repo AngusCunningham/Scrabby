@@ -29,16 +29,16 @@ public class Board {
 
             Square newSquare = new Square(count);
 
-            if (Main.arrayContainsInt(doubleLetters, count)) {
+            if (Utils.arrayContainsInt(doubleLetters, count)) {
                 newSquare.setBonus('l');
             }
-            else if (Main.arrayContainsInt(tripleLetters, count)) {
+            else if (Utils.arrayContainsInt(tripleLetters, count)) {
                 newSquare.setBonus('L');
             }
-            else if (Main.arrayContainsInt(doubleWords, count)) {
+            else if (Utils.arrayContainsInt(doubleWords, count)) {
                 newSquare.setBonus('w');
             }
-            else if (Main.arrayContainsInt(tripleWords, count)) {
+            else if (Utils.arrayContainsInt(tripleWords, count)) {
                 newSquare.setBonus('W');
             }
             else {

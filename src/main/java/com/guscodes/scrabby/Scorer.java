@@ -1,6 +1,5 @@
 package com.guscodes.scrabby;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,6 +42,7 @@ public class Scorer {
         letterScores.put('X', 8);
         letterScores.put('Y', 4);
         letterScores.put('Z', 10);
+        letterScores.put('~', 0);
 
         // lower case letters represent blanks
         for (char lowerCaseLetter : "abcdefghijklmnopqrstuvwxyz".toCharArray()) {
@@ -87,19 +87,19 @@ public class Scorer {
             if (!(board.getPlayedLocations().contains(currentLocation))) {
                 newLettersAdded += 1;
                 wordWithLocations.addLetterFromTray(String.valueOf(wordLetters[index]));
-                if (Main.arrayContainsInt(doubleLetters, currentLocation)) {
+                if (Utils.arrayContainsInt(doubleLetters, currentLocation)) {
                     letterScore *= 2;
                 }
 
-                if (Main.arrayContainsInt(tripleLetters, currentLocation)) {
+                if (Utils.arrayContainsInt(tripleLetters, currentLocation)) {
                     letterScore *= 3;
                 }
 
-                if (Main.arrayContainsInt(doubleWords, currentLocation)) {
+                if (Utils.arrayContainsInt(doubleWords, currentLocation)) {
                     wordMultiplier *= 2;
                 }
 
-                if (Main.arrayContainsInt(tripleWords, currentLocation)) {
+                if (Utils.arrayContainsInt(tripleWords, currentLocation)) {
                     wordMultiplier *= 3;
                 }
             }
@@ -113,5 +113,10 @@ public class Scorer {
         }
         //System.out.println(word + ":" + wordScore + "\n\n");
         return wordScore * wordMultiplier;
+    }
+
+    public int getLetterScore(Character letter) {
+        char letterUpper = Character.toUpperCase(letter);
+        return letterScores.get(letterUpper);
     }
 }
