@@ -10,6 +10,8 @@ public class Generator {
     private Scorer scorer;
     private LetterExtender letEx;
 
+    private HashMap<Character, Float> letterFrequencies;
+
     public Generator(Board board, DictHandler dictHandler, Validator validator, Scorer scorer) {
         this.board = board;
         this.dictHandler = dictHandler;
@@ -17,6 +19,7 @@ public class Generator {
         this.validator = validator;
         this.scorer = scorer;
         this.letEx = new LetterExtender(board.getSquares(), dictHandler);
+        this.letterFrequencies = dictHandler.getLetterFreqs();
     }
 
     public Set<Word> getSuggestions(String tray) {
@@ -36,17 +39,22 @@ public class Generator {
 
         Set<Word> scoredAndValidatedSuggestions = filterValidateAndScore(suggestedWords);
 
-        //TODO: each word and the squares it can open up can be added later
+
         //TODO: does the word take useful letters from the tray which could be kept for later?
 
-        /*
         for (Word word : scoredAndValidatedSuggestions) {
             List<String> lettersUsedFromTray = word.getTrayLettersUsed();
+            float letterCommonality = 0;
             for (String letter : lettersUsedFromTray) {
-                
+                float letterFrequencyInDictionary = letterFrequencies.get(letter.toCharArray()[0]);
+                letterCommonality += letterFrequencyInDictionary;
             }
+            System.out.printf("for word %s, commonality is %f, rating is %f\n", word.getWord(), letterCommonality, letterCommonality * word.getRating());
+            word.setRating(Math.round(word.getRating() / letterCommonality));
+            // todo: sort out common word preference factor
         }
-        */
+
+        //TODO: each word and the squares it can open up can be added later
 
         long endTime = System.nanoTime();
         float elapsedTimeInSeconds = (endTime - startTime) / 1000000000;

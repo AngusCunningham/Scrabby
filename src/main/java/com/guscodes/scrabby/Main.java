@@ -148,14 +148,15 @@ public class Main {
                         }
                         String directionWord = "UNSET";
                         if (word.getOrientation() == 'H') {
-                            directionWord = "across";
+                            directionWord = "horizontally";
                         }
                         if (word.getOrientation() == 'V') {
-                            directionWord = "down";
+                            directionWord = "vertically";
                         }
 
-                        System.out.printf("%s scoring %d %s from %s\n", word.getWord(), word.getScore(),
-                                                                                directionWord, coordinatesToPrint[0]);
+                        System.out.printf("%s scoring %d %s from %s, play rated %d\n", word.getWord(), word.getScore(),
+                                                                                directionWord, coordinatesToPrint[0],
+                                                                                word.getRating());
                     }
                     wordsPassed += 1;
                 }
