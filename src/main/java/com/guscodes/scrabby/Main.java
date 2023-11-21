@@ -33,7 +33,7 @@ public class Main {
                 Validator validator = new Validator(board, dictHandler.getDictionary());
 
                 Generator controlSubject = new Generator(board, dictHandler, validator, scorer, false);
-                Generator testSubject = new Generator(board, dictHandler, validator, scorer, false);
+                Generator testSubject = new Generator(board, dictHandler, validator, scorer, true);
 
                 int controlGameScore = 0;
                 int testGameScore = 0;
@@ -151,8 +151,17 @@ public class Main {
                     else {
                         List<Word> sortedTestSuggestions = Utils.sortWordsByRating(testSuggestions);
                         Word bestTestPlay = sortedTestSuggestions.get(sortedTestSuggestions.size() - 1);
+                        Word highestScoringTestPlay = null;
+                        int highestScore = 0;
+                        for (Word word : sortedTestSuggestions) {
+                            if (word.getScore() > highestScore) {
+                                highestScore = word.getScore();
+                                highestScoringTestPlay = word;
+                            }
+                        }
                         board.addWord(bestTestPlay);
                         System.out.println("Word rating: " + bestTestPlay.getRating());
+                        System.out.printf("Otherwise would have played %s scoring %d\n", highestScoringTestPlay.getWord(), highestScore);
 
                         List<String> testTrayLettersUsed = bestTestPlay.getTrayLettersUsed();
                         for (String letter : testTrayLettersUsed) {
@@ -187,19 +196,20 @@ public class Main {
                 System.out.printf("Game %d of %d: control score = %d, test score = %d\n", iterationsPlayed + 1,
                         maxIterations, controlGameScore, testGameScore);
                 iterationsPlayed += 1;
+
+                float controlAverageScore = (float) controlTotalScore / iterationsPlayed;
+                float testAverageScore = (float) testTotalScore / iterationsPlayed;
+                float fractionGamesWonByControl = (float) gamesWonByControl / iterationsPlayed;
+                float fractionGamesWonByTest = (float) gamesWonByTest / iterationsPlayed;
+
+                System.out.println("Test Average Score: " + testAverageScore);
+                System.out.println("Test Win Fraction: " + fractionGamesWonByTest);
+                System.out.println();
+                System.out.println("Control Average Score: " + controlAverageScore);
+                System.out.println("Control Win Fraction: " + fractionGamesWonByControl);
+                System.out.println("\n\n");
             }
             System.out.println("\n\nIterations Complete!");
-            float controlAverageScore = (float) controlTotalScore / iterationsPlayed;
-            float testAverageScore = (float) testTotalScore / iterationsPlayed;
-            float fractionGamesWonByControl = (float) gamesWonByControl / iterationsPlayed;
-            float fractionGamesWonByTest = (float) gamesWonByTest / iterationsPlayed;
-            float fractionGamesDrawn;
-            float averageWinMargin;
-            System.out.println("Test Average Score: " + testAverageScore);
-            System.out.println("Test Win Fraction: " + fractionGamesWonByTest);
-            System.out.println();
-            System.out.println("Control Average Score: " + controlAverageScore);
-            System.out.println("Control Win Fraction: " + fractionGamesWonByControl);
         }
 
         else {

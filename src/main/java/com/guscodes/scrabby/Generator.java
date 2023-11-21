@@ -46,27 +46,38 @@ public class Generator {
 
         //EXPERIMENTAL FEATURE ZONE
         if (useExperimentalFeatures) {
-            // is the word using the least useful letters from the tray first?
-            for (Word word : scoredAndValidatedSuggestions) {
-                float commonalityScore = 0;
-                List<String> trayLettersUsed = word.getTrayLettersUsed();
-                for (String letter : trayLettersUsed) {
-                    char letterChar = Character.toUpperCase(letter.charAt(0));
-                    commonalityScore += letterFrequencies.get(letterChar);
-                    //System.out.println("Commonality score of " + word.getWord() + " : " + commonalityScore);
-                    //System.out.println(word.getScore());
-                }
+            boolean preferShortWords = false;
+            boolean preferMorePointsPerTile = true;
 
-                word.setRating(Math.round((float) word.getScore() - ((float) 1 * commonalityScore)));
+            // prefer shorter words - opens up fewer squares for opponent
+            if (preferShortWords) {
+                for (Word word : scoredAndValidatedSuggestions) {
+                    float scorePerNewLetter = (float) word.getScore() / word.getTrayLettersUsed().size();
+                    int newRating = (int) Math.round(word.getRating() * (0.1 * scorePerNewLetter));
+                    word.setRating(newRating);
+                }
             }
 
-            //TODO: each word and the squares it can open up can be added later
+            // prefer words which score more per point on the tiles used - e.g. prefer to save Q for QUESTED, not for QI
+            if (preferMorePointsPerTile) {
+                for (Word word : scoredAndValidatedSuggestions) {
+                    List<String> newTilesPlaced = word.getTrayLettersUsed();
+                    int pointsFromNewTiles = 0;
+                    for (String tile : newTilesPlaced) {
+                        pointsFromNewTiles += scorer.getLetterScore(tile.charAt(0));
+                    }
+                    float fractionOfWordScoreFromNewTilePoints = (float) pointsFromNewTiles / word.getScore();
+                    if (fractionOfWordScoreFromNewTilePoints > 0.3) {
+                        word.setRating((int) Math.round(word.getRating() * 0.8));
+                    }
+                }
+            }
         }
 
         // #########################################################################################################
 
         long endTime = System.nanoTime();
-        float elapsedTimeInSeconds = (endTime - startTime) / 1000000000;
+        double elapsedTimeInSeconds = (double) (endTime - startTime) / 1000000000;
         System.out.printf("%d plays analysed in %f seconds, %d valid plays found\n", suggestedWords.size(),
                                                 elapsedTimeInSeconds, scoredAndValidatedSuggestions.size());
         return scoredAndValidatedSuggestions;
