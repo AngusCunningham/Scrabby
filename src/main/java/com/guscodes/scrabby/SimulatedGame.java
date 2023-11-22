@@ -38,7 +38,7 @@ public class SimulatedGame {
         TileBag tileBag = new TileBag();
 
         Generator baseGen = new Generator(board, dictHandler, validator, scorer, false);
-        Generator testGen = new Generator(board, dictHandler, validator, scorer, true);
+        Generator testGen = new Generator(board, dictHandler, validator, scorer, false);
 
         VirtualPlayer player1 = new VirtualPlayer(baseGen, board, tileBag, scorer);
         VirtualPlayer player2 = new VirtualPlayer(testGen, board, tileBag, scorer);

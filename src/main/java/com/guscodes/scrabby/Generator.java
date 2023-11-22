@@ -47,8 +47,8 @@ public class Generator {
 
         //EXPERIMENTAL FEATURE ZONE
         if (useExperimentalFeatures) {
-            boolean preferShortWords = false;
-            boolean preferMorePointsPerTile = true;
+            boolean preferShortWords = true;
+            boolean preferMorePointsPerTile = false;
 
             // prefer shorter words - opens up fewer squares for opponent
             if (preferShortWords) {
