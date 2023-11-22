@@ -26,6 +26,7 @@ public class Generator {
     }
 
     public Set<Word> getSuggestions(String tray) {
+        System.out.println("Scrabby is thinking.....");
         long startTime = System.nanoTime();
         Set<Word> suggestedWords = new HashSet<>();
         Set<String> allTrays = trayVersions(tray);

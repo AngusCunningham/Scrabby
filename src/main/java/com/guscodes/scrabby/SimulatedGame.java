@@ -5,33 +5,36 @@ import java.util.List;
 
 public class SimulatedGame {
     private DictHandler dictHandler;
-    private Scorer scorer;
-    private Validator validator;
 
-    private List<Integer> player1Scores = new ArrayList<>();
-    private List<Integer> player2Scores = new ArrayList<>();
+    private int player1TotalScore;
+    private int player2TotalScore;
+    private int gamesWonBy1;
+    private int gamesWonBy2;
 
+    private int totalIterations;
+    private int iterationsPlayed;
 
-    public SimulatedGame(DictHandler dictHandler, Scorer scorer, Validator validator, ) {
+    public SimulatedGame(DictHandler dictHandler) {
         this.dictHandler = dictHandler;
-        this.scorer = scorer;
-        this.validator = validator;
     }
 
-    public List<List<Integer>> simulateNGames(int n) {
-        int gamesPlayed = 0;
-        while (gamesPlayed < n) {
+    public void simulateNGames(int n) {
+        player1TotalScore = 0;
+        player2TotalScore = 0;
+        gamesWonBy1 = 0;
+        gamesWonBy2 = 0;
+
+        totalIterations = n;
+        iterationsPlayed = 0;
+        while (iterationsPlayed < n) {
             playOneRound();
         }
-        List<List<Integer>> scores =  new ArrayList<List<Integer>>();
-        scores.add(player1Scores);
-        scores.add(player2Scores);
-
-        return scores;
     }
 
     private void playOneRound() {
         Board board = new Board(dictHandler);
+        Scorer scorer = new Scorer(board);
+        Validator validator = new Validator(board, dictHandler.getDictionary());
         TileBag tileBag = new TileBag();
 
         Generator baseGen = new Generator(board, dictHandler, validator, scorer, false);
@@ -63,8 +66,38 @@ public class SimulatedGame {
                 }
             }
         }
-        player1Scores.add(player1.getScore());
-        player2Scores.add(player2.getScore());
+
+        iterationsPlayed += 1;
+
+        int finalScore1 = player1.getScore();
+        int finalScore2 = player2.getScore();
+        player1TotalScore += finalScore1;
+        player2TotalScore += finalScore2;
+
+        if (finalScore1 > finalScore2) {
+            gamesWonBy1 += 1;
+        }
+
+        if (finalScore2 > finalScore1) {
+            gamesWonBy2 += 1;
+        }
+
         board.show('L');
+        System.out.printf("Game %d of %d completed\n\n", iterationsPlayed, totalIterations);
+        System.out.printf("Player 1 scored: %d\n", finalScore1);
+        System.out.printf("Player 2 scored: %d\n", finalScore2);
+
+        float player1Average = (float) player1TotalScore / iterationsPlayed;
+        float player2Average = (float) player2TotalScore / iterationsPlayed;
+        float fractionGamesWonByPlayer1 = (float) gamesWonBy1 / iterationsPlayed;
+        float fractionGamesWonByPlayer2 = (float) gamesWonBy2 / iterationsPlayed;
+
+        System.out.println("\nBase Average Score: " + player1Average);
+        System.out.println("Base Win Fraction: " + fractionGamesWonByPlayer1);
+        System.out.println();
+        System.out.println("Test Average Score: " + player2Average);
+        System.out.println("Test Win Fraction: " + fractionGamesWonByPlayer2);
+        System.out.println();
+        System.out.println();
     }
 }
