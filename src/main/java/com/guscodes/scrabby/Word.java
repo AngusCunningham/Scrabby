@@ -96,6 +96,11 @@ public class Word implements Comparable {
         this.rating = rating;
     }
 
+    public void modifyRatingByFactor(double factor) {
+        int newRating = (int) Math.round(rating * factor);
+        rating = newRating;
+    }
+
     public void addLetterFromTray(String letterFromTray) {
         this.lettersUsedFromTray.add(letterFromTray);
     }

@@ -1,73 +1,75 @@
 package com.guscodes.scrabby;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class TileBag {
-    private HashMap<Character, Integer> lettersRemaining = new HashMap<>();
+    private List<Character> lettersRemaining = new ArrayList<>();
     private Random random = new Random();
 
     public TileBag() {
-        lettersRemaining.put('A', 9);
-        lettersRemaining.put('B', 2);
-        lettersRemaining.put('C', 2);
-        lettersRemaining.put('D', 4);
-        lettersRemaining.put('E', 12);
-        lettersRemaining.put('F', 2);
-        lettersRemaining.put('G', 3);
-        lettersRemaining.put('H', 2);
-        lettersRemaining.put('I', 9);
-        lettersRemaining.put('J', 1);
-        lettersRemaining.put('K', 1);
-        lettersRemaining.put('L', 4);
-        lettersRemaining.put('M', 2);
-        lettersRemaining.put('N', 6);
-        lettersRemaining.put('O', 8);
-        lettersRemaining.put('P', 2);
-        lettersRemaining.put('Q', 1);
-        lettersRemaining.put('R', 6);
-        lettersRemaining.put('S', 4);
-        lettersRemaining.put('T', 6);
-        lettersRemaining.put('U', 4);
-        lettersRemaining.put('V', 2);
-        lettersRemaining.put('W', 2);
-        lettersRemaining.put('X', 1);
-        lettersRemaining.put('Y', 2);
-        lettersRemaining.put('Z', 1);
-        lettersRemaining.put('~', 2);
+        lettersRemaining.add('X');
+        lettersRemaining.add('Z');
+        lettersRemaining.add('Q');
+        lettersRemaining.add('J');
+        lettersRemaining.add('K');
+
+        for (int i = 0; i < 2; i++) {
+            lettersRemaining.add('B');
+            lettersRemaining.add('C');
+            lettersRemaining.add('M');
+            lettersRemaining.add('F');
+            lettersRemaining.add('H');
+            lettersRemaining.add('P');
+            lettersRemaining.add('V');
+            lettersRemaining.add('W');
+            lettersRemaining.add('Y');
+            lettersRemaining.add('~');
+        }
+
+        for (int i = 0; i < 3; i++) {
+            lettersRemaining.add('G');
+        }
+
+        for (int i = 0; i < 4; i++) {
+            lettersRemaining.add('D');
+            lettersRemaining.add('L');
+            lettersRemaining.add('U');
+            lettersRemaining.add('S');
+        }
+
+        for (int i = 0; i < 6; i++) {
+            lettersRemaining.add('R');
+            lettersRemaining.add('T');
+            lettersRemaining.add('N');
+        }
+
+        for (int i = 0; i < 8; i++) {
+            lettersRemaining.add('O');
+        }
+
+        for (int i = 0; i < 9; i++) {
+            lettersRemaining.add('A');
+            lettersRemaining.add('I');
+        }
+
+        for (int i = 0; i < 12; i++) {
+            lettersRemaining.add('E');
+        }
     }
 
     public char getLetter() throws IllegalStateException {
-        String allTiles = "ABCDEFGHIJKLMNOPQRSTUVWXYZ~";
-        if (this.isEmpty()) throw new IllegalStateException("Tile bag is empty");
+        if (lettersRemaining.size() == 0) throw new IllegalStateException("Tile bag is empty");
         else {
-            while (true) {
-                int tileIndex = random.nextInt(27);
-                char letter = allTiles.charAt(tileIndex);
-                int remainingQuantity = lettersRemaining.get(letter);
-                if (remainingQuantity > 0) {
-                    int newRemainingQuantity = remainingQuantity - 1;
-                    //System.out.println(letter + remainingQuantity + newRemainingQuantity);
-                    lettersRemaining.put(letter, newRemainingQuantity);
-                    return letter;
-                }
-            }
+            int tileIndex = random.nextInt(lettersRemaining.size());
+            char letter = lettersRemaining.get(tileIndex);
+            lettersRemaining.remove(tileIndex);
+            return letter;
         }
     }
 
-    public void returnTileToBag(char letter) throws IllegalArgumentException {
-        if (!(lettersRemaining.containsKey(letter))) {
-            throw new IllegalArgumentException("Letter does not exist in bag");
-        }
-        else {
-            lettersRemaining.put(letter, lettersRemaining.get(letter) + 1);
-        }
-    }
-
-    private boolean isEmpty() {
-        for (Character tile : lettersRemaining.keySet()) {
-            if (lettersRemaining.get(tile) > 0) return false;
-        }
-        return true;
+    public void returnTileToBag(char letter) {
+        lettersRemaining.add(letter);
     }
 }

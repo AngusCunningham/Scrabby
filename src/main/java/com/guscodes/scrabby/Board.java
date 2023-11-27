@@ -178,7 +178,7 @@ public class Board {
         for (int location : letterLocations) {
             playedSquares.add(squares[location]);
         }
-        System.out.printf("%s played, scoring %d \n", mainWord.getWord(), score);
+        //System.out.printf("%s played, scoring %d \n", mainWord.getWord(), score);
         refresh();
     }
 

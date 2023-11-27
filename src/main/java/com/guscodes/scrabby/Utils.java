@@ -7,6 +7,8 @@ public class Utils {
     public static final int EMPTY_RACK_BONUS = 7;
     public static final char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
 
+    public static final String[] RETAINS = "RETAINS".split("");
+    public static final List<String> IDEAL_TRAY_LETTERS = Arrays.asList(RETAINS);
 
     public static HashSet<Character> getAlphabetSet() {
         HashSet<Character> setty = new HashSet<>();
@@ -15,6 +17,9 @@ public class Utils {
         }
         return setty;
     }
+
+
+
 
     //board navigation static functions
     public static int sAbove(int location) throws IndexOutOfBoundsException {

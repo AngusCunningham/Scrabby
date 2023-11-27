@@ -3,30 +3,23 @@ package com.guscodes.scrabby;
 import java.util.*;
 
 public class Generator {
-    private Board board;
-    private DictHandler dictHandler;
-    private Set<String> dictionary;
     private Validator validator;
     private Scorer scorer;
     private LetterExtender letEx;
     boolean useExperimentalFeatures;
+    private float testParameter;
 
-    private HashMap<Character, Float> letterFrequencies;
-
-    public Generator(Board board, DictHandler dictHandler, Validator validator, Scorer scorer,
-                     boolean useExperimentalFeatures) {
-        this.board = board;
-        this.dictHandler = dictHandler;
-        this.dictionary = dictHandler.getDictionary();
+    public Generator(LetterExtender letterExtender, Validator validator, Scorer scorer,
+                     boolean useExperimentalFeatures, double testParameter) {
         this.validator = validator;
         this.scorer = scorer;
-        this.letEx = new LetterExtender(board.getSquares(), dictHandler);
-        this.letterFrequencies = dictHandler.getLetterFreqs();
         this.useExperimentalFeatures = useExperimentalFeatures;
+        this.testParameter = (float) testParameter;
+        this.letEx = letterExtender;
     }
 
     public Set<Word> getSuggestions(String tray) {
-        System.out.println("Scrabby is thinking.....");
+        //System.out.println("Scrabby is thinking.....");
         long startTime = System.nanoTime();
         Set<Word> suggestedWords = new HashSet<>();
         Set<String> allTrays = trayVersions(tray);
@@ -47,29 +40,30 @@ public class Generator {
 
         //EXPERIMENTAL FEATURE ZONE
         if (useExperimentalFeatures) {
-            boolean preferShortWords = true;
-            boolean preferMorePointsPerTile = false;
+            /* FEATURES PLANNED / In Progress:
+            - Prefer to save blanks for words scoring more highly - COMPLETE - OPTIMAL MULTIPLIER IS 0
+            - Prefer to play words which score more per new tile used
+            - Prefer to use high scoring tiles for words which score more highly
+            - Prefer to play words which take bonus squares from opponent or block the use of bonus squares
+            - Prefer to play words which open up fewer bonus squares for opponent to use
+            - Prefer not to play words which can be easily extended with s, ed, er etc right before a triple word
+            - Prefer to keep RETAINS tiles in tray when possible
+             */
 
-            // prefer shorter words - opens up fewer squares for opponent
-            if (preferShortWords) {
-                for (Word word : scoredAndValidatedSuggestions) {
-                    float scorePerNewLetter = (float) word.getScore() / word.getTrayLettersUsed().size();
-                    int newRating = (int) Math.round(word.getRating() * (0.1 * scorePerNewLetter));
-                    word.setRating(newRating);
-                }
-            }
+            boolean efficientBlankUsage = false;
 
-            // prefer words which score more per point on the tiles used - e.g. prefer to save Q for QUESTED, not for QI
-            if (preferMorePointsPerTile) {
+            // prefer to only use blanks for high scoring words
+            if (efficientBlankUsage) {
                 for (Word word : scoredAndValidatedSuggestions) {
                     List<String> newTilesPlaced = word.getTrayLettersUsed();
-                    int pointsFromNewTiles = 0;
                     for (String tile : newTilesPlaced) {
-                        pointsFromNewTiles += scorer.getLetterScore(tile.charAt(0));
-                    }
-                    float fractionOfWordScoreFromNewTilePoints = (float) pointsFromNewTiles / word.getScore();
-                    if (fractionOfWordScoreFromNewTilePoints > 0.3) {
-                        word.setRating((int) Math.round(word.getRating() * 0.8));
+                        if (Character.isLowerCase(tile.charAt(0))) {
+                            if (word.getScore() < 50) {
+                                word.modifyRatingByFactor(0);
+                                // analysis complete, using factor of 0 will give a 6% increase in average win liklihood
+                            }
+                            break;
+                        }
                     }
                 }
             }
@@ -79,8 +73,8 @@ public class Generator {
 
         long endTime = System.nanoTime();
         double elapsedTimeInSeconds = (double) (endTime - startTime) / 1000000000;
-        System.out.printf("%d plays analysed in %f seconds, %d valid plays found\n", suggestedWords.size(),
-                                                elapsedTimeInSeconds, scoredAndValidatedSuggestions.size());
+        //System.out.printf("%d plays analysed in %f seconds, %d valid plays found\n", suggestedWords.size(),
+                                                //elapsedTimeInSeconds, scoredAndValidatedSuggestions.size());
         return scoredAndValidatedSuggestions;
     }
 

@@ -1,5 +1,6 @@
 module com.guscodes.scrabby {
-	//-----requires section
+    requires java.desktop;
+    //-----requires section
 	
 	//-----opens section
     

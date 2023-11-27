@@ -28,8 +28,10 @@ public class Main {
         else {
             Board board = new Board(dictHandler);
             Scorer scorer = new Scorer(board);
+            LetterExtender letterExtender = new LetterExtender(board.getSquares(), dictHandler);
             Validator validator = new Validator(board, dictHandler.getDictionary());
-            Generator generator = new Generator(board, dictHandler, validator, scorer, false);
+            Generator generator = new Generator(letterExtender, validator, scorer, false,
+                    0);
             //Main loop
             while (true) {
                 board.show('L');

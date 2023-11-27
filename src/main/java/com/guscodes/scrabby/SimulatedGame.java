@@ -1,15 +1,14 @@
 package com.guscodes.scrabby;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.Toolkit;
+import java.util.HashMap;
 
 public class SimulatedGame {
     private DictHandler dictHandler;
 
-    private int player1TotalScore;
-    private int player2TotalScore;
-    private int gamesWonBy1;
-    private int gamesWonBy2;
+    private int controlTotalScore;
+    private int testTotalScore;
+    private int gamesWonByControl;
+    private int gamesWonByTest;
 
     private int totalIterations;
     private int iterationsPlayed;
@@ -19,34 +18,70 @@ public class SimulatedGame {
     }
 
     public void simulateNGames(int n) {
-        player1TotalScore = 0;
-        player2TotalScore = 0;
-        gamesWonBy1 = 0;
-        gamesWonBy2 = 0;
 
-        totalIterations = n;
-        iterationsPlayed = 0;
-        while (iterationsPlayed < n) {
-            playOneRound();
+        double[] testParameterValues = {0.5, 1, 1.1}; //
+
+        HashMap<Double, Double> finalResults = new HashMap<>();
+
+        for (double testValue : testParameterValues) {
+            finalResults.put(testValue, 0.0);
         }
+
+        int valuesExamined = 0;
+        int valuesToExamine = testParameterValues.length;
+
+        for (double testValue : testParameterValues) {
+
+            controlTotalScore = 0;
+            testTotalScore = 0;
+            gamesWonByControl = 0;
+            gamesWonByTest = 0;
+
+            totalIterations = n;
+            iterationsPlayed = 0;
+
+            valuesExamined += 1;
+
+            System.out.printf("Beginning test on value %f which is %d out of %d values to test at %d iterations each\n",
+                    testValue, valuesExamined, valuesToExamine, n);
+
+            while (iterationsPlayed < n) {
+                playOneRound(testValue);
+            }
+
+            double testWinFraction = (double) gamesWonByTest / iterationsPlayed;
+            finalResults.put(testValue, testWinFraction);
+            System.out.printf("Using a multiplier of %f, testPlayer won %f of the games played\n\n",
+                                                                                    testValue, testWinFraction);
+        }
+
+        System.out.printf("\n\n");
+        for (double testValue : testParameterValues) {
+            System.out.printf("Value of %f produces a test win fraction of: %f \n",
+                    testValue, finalResults.get(testValue));
+        }
+
+        Toolkit.getDefaultToolkit().beep();
     }
 
-    private void playOneRound() {
+    private void playOneRound(double testParameter) {
         Board board = new Board(dictHandler);
         Scorer scorer = new Scorer(board);
         Validator validator = new Validator(board, dictHandler.getDictionary());
         TileBag tileBag = new TileBag();
+        LetterExtender letterExtender = new LetterExtender(board.getSquares(), dictHandler);
 
-        Generator baseGen = new Generator(board, dictHandler, validator, scorer, false);
-        Generator testGen = new Generator(board, dictHandler, validator, scorer, false);
+        Generator baseGen = new Generator(letterExtender, validator, scorer, false, 0);
+        Generator testGen = new Generator(letterExtender, validator, scorer, true, testParameter);
 
-        VirtualPlayer player1 = new VirtualPlayer(baseGen, board, tileBag, scorer);
-        VirtualPlayer player2 = new VirtualPlayer(testGen, board, tileBag, scorer);
+        VirtualPlayer controlPlayer = new VirtualPlayer(baseGen, board, tileBag, scorer);
+        VirtualPlayer testPlayer = new VirtualPlayer(testGen, board, tileBag, scorer);
 
-        VirtualPlayer[] players = {player1, player2};
+        VirtualPlayer[] players = {controlPlayer, testPlayer};
 
         boolean playingOn = true;
 
+        System.out.printf("Beginning game %d out of %d\n", iterationsPlayed + 1, totalIterations);
         while (playingOn) {
             for (VirtualPlayer player : players) {
                 player.takeTurn();
@@ -55,12 +90,12 @@ public class SimulatedGame {
                 boolean playerFinished = player.getTray().length() == 0;
 
                 // if both players have passed 3 times, the game ends
-                boolean passLimitReached = ((player1.getConsecutivePassCount()) > 2 &&
-                                                                        (player2.getConsecutivePassCount() > 2));
+                boolean passLimitReached = ((controlPlayer.getConsecutivePassCount()) > 2 &&
+                                                                        (testPlayer.getConsecutivePassCount() > 2));
 
                 if (passLimitReached || playerFinished) {
-                    player1.calculateFinalScore();
-                    player2.calculateFinalScore();
+                    controlPlayer.calculateFinalScore();
+                    testPlayer.calculateFinalScore();
                     playingOn = false;
                     break;
                 }
@@ -69,23 +104,24 @@ public class SimulatedGame {
 
         iterationsPlayed += 1;
 
-        int finalScore1 = player1.getScore();
-        int finalScore2 = player2.getScore();
-        player1TotalScore += finalScore1;
-        player2TotalScore += finalScore2;
+        int controlFinalScore = controlPlayer.getScore();
+        int testFinalScore = testPlayer.getScore();
+        controlTotalScore += controlFinalScore;
+        testTotalScore += testFinalScore;
 
-        if (finalScore1 > finalScore2) {
-            gamesWonBy1 += 1;
+        if (controlFinalScore > testFinalScore) {
+            gamesWonByControl += 1;
         }
 
-        if (finalScore2 > finalScore1) {
-            gamesWonBy2 += 1;
+        if (testFinalScore > controlFinalScore) {
+            gamesWonByTest += 1;
         }
 
+        /*
         board.show('L');
         System.out.printf("Game %d of %d completed\n\n", iterationsPlayed, totalIterations);
-        System.out.printf("Player 1 scored: %d\n", finalScore1);
-        System.out.printf("Player 2 scored: %d\n", finalScore2);
+        System.out.printf("Player 1 scored: %d\n", controlFinalScore);
+        System.out.printf("Player 2 scored: %d\n", testFinalScore);
 
         float player1Average = (float) player1TotalScore / iterationsPlayed;
         float player2Average = (float) player2TotalScore / iterationsPlayed;
@@ -99,5 +135,6 @@ public class SimulatedGame {
         System.out.println("Test Win Fraction: " + fractionGamesWonByPlayer2);
         System.out.println();
         System.out.println();
+        */
     }
 }
