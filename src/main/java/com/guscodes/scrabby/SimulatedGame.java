@@ -19,7 +19,7 @@ public class SimulatedGame {
 
     public void simulateNGames(int n) {
 
-        double[] testParameterValues = {0.5, 1, 1.1}; //
+        double[] testParameterValues = {0, 1, 0.5, 0.25, 0.75, 2, 3}; //
 
         HashMap<Double, Double> finalResults = new HashMap<>();
 
@@ -117,24 +117,24 @@ public class SimulatedGame {
             gamesWonByTest += 1;
         }
 
-        /*
-        board.show('L');
-        System.out.printf("Game %d of %d completed\n\n", iterationsPlayed, totalIterations);
-        System.out.printf("Player 1 scored: %d\n", controlFinalScore);
-        System.out.printf("Player 2 scored: %d\n", testFinalScore);
 
-        float player1Average = (float) player1TotalScore / iterationsPlayed;
-        float player2Average = (float) player2TotalScore / iterationsPlayed;
-        float fractionGamesWonByPlayer1 = (float) gamesWonBy1 / iterationsPlayed;
-        float fractionGamesWonByPlayer2 = (float) gamesWonBy2 / iterationsPlayed;
+        // board.show('L');
+        //System.out.printf("Game %d of %d completed\n\n", iterationsPlayed, totalIterations);
+        //System.out.printf("Player 1 scored: %d\n", controlFinalScore);
+        //System.out.printf("Player 2 scored: %d\n", testFinalScore);
 
-        System.out.println("\nBase Average Score: " + player1Average);
-        System.out.println("Base Win Fraction: " + fractionGamesWonByPlayer1);
+        //float player1Average = (float) controlTotalScore / iterationsPlayed;
+        //float player2Average = (float) testTotalScore / iterationsPlayed;
+        //float fractionGamesWonByPlayer1 = (float) gamesWonByControl / iterationsPlayed;
+        float fractionGamesWonByTest = (float) gamesWonByTest / iterationsPlayed;
+
+        // System.out.println("\nBase Average Score: " + player1Average);
+        // System.out.println("Base Win Fraction: " + fractionGamesWonByPlayer1);
+        // System.out.println();
+        // System.out.println("Test Average Score: " + player2Average);
+        System.out.println("Test Win Fraction: " + fractionGamesWonByTest);
         System.out.println();
-        System.out.println("Test Average Score: " + player2Average);
-        System.out.println("Test Win Fraction: " + fractionGamesWonByPlayer2);
-        System.out.println();
-        System.out.println();
-        */
+        //System.out.println();
+
     }
 }

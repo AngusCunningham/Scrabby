@@ -15,6 +15,7 @@ public class Main {
 
         // check if suggesting mode or playing mode
         String mode = mainThread.getModeFromUser();
+
         if (mode.equals("D")) {
 
             int maxIterations = mainThread.getIterationCountFromUser();
@@ -30,8 +31,10 @@ public class Main {
             Scorer scorer = new Scorer(board);
             LetterExtender letterExtender = new LetterExtender(board.getSquares(), dictHandler);
             Validator validator = new Validator(board, dictHandler.getDictionary());
-            Generator generator = new Generator(letterExtender, validator, scorer, false,
+            Generator generator = new Generator(letterExtender, validator, scorer, true,
                     0);
+            Word topRecommendation = null;
+
             //Main loop
             while (true) {
                 board.show('L');
@@ -42,17 +45,23 @@ public class Main {
                 if (action.equals("A")) {
 
                     //add a new word to the board
-                    String word = mainThread.getWordFromUser();
-                    char orientation = mainThread.getOrientationFromUser();
-                    int startCol = mainThread.getStartColFromUser();
-                    int startRow = mainThread.getStartRowFromUser();
+                    String word = mainThread.getWordFromUser(topRecommendation);
+                    if (word.equals("PLAY_TOP_REC") && topRecommendation != null) {
+                        board.addWord(topRecommendation);
+                    }
 
-                    try {
-                        Word wordToAdd = new Word(word, Utils.letterLocations(word, startCol, startRow, orientation),
-                                orientation);
-                        board.addWord(wordToAdd);
-                    } catch (IllegalArgumentException e) {
-                        System.out.println("That play was not valid, please make a new choice\n");
+                    else {
+                        char orientation = mainThread.getOrientationFromUser();
+                        int startCol = mainThread.getStartColFromUser();
+                        int startRow = mainThread.getStartRowFromUser();
+
+                        try {
+                            Word wordToAdd = new Word(word, Utils.letterLocations(word, startCol, startRow, orientation),
+                                    orientation);
+                            board.addWord(wordToAdd);
+                        } catch (IllegalArgumentException e) {
+                            System.out.println("That play was not valid, please make a new choice\n");
+                        }
                     }
                 }
 
@@ -71,7 +80,7 @@ public class Main {
                         continue;
                     }
 
-                    mainThread.displaySuggestionsToUser(possibleWords);
+                    topRecommendation = mainThread.displaySuggestionsToUser(possibleWords);
                 }
             }
         }
@@ -79,16 +88,16 @@ public class Main {
 
     private String getModeFromUser() {
         //get functionality from user, loop only used to deal with invalid input
-        System.out.println("Enter (D)iagnostic mode?");
-        String mode = scanner.next().toUpperCase();
+        System.out.printf("Enter (D)iagnostic mode?");
+        String mode = scanner.nextLine().toUpperCase();
         return mode;
     }
 
     private String getActionFromUser() {
         while (true) {
             //get functionality from user, loop only used to deal with invalid input
-            System.out.println("Would you like to (A)dd a word to the board or (G)et a suggestion? ");
-            String action = scanner.next().toUpperCase();
+            System.out.printf("Would you like to (A)dd a word to the board or (G)et a suggestion? ");
+            String action = scanner.nextLine().toUpperCase();
 
             if (!(action.equals("A")) && !(action.equals("G"))) {
                 System.out.println("Please only enter the letter A or G");
@@ -98,12 +107,19 @@ public class Main {
         }
     }
 
-    private String getWordFromUser() {
+    private String getWordFromUser(Word topReccomendation) {
         while (true) {
-            System.out.println("Type your word to add (represent blanks with lower case): ");
-            String word = scanner.next();
+            System.out.printf("Type your word to add (represent blanks with lower case): ");
+            String word = scanner.nextLine();
             if (word.length() > 15) {
                 System.out.println("Your word must be 15 characters or fewer");
+                continue;
+            }
+            if (topReccomendation != null && word.equals("")) {
+                word = "PLAY_TOP_REC";
+            }
+            else if (word.length() < 2) {
+                System.out.println("Your word must be longer than one letter");
                 continue;
             }
             return word;
@@ -161,8 +177,8 @@ public class Main {
 
     private String getTrayFromUser() {
         while (true) {
-            System.out.println("Please enter the letters in your tray (represent blank tiles with '~'): ");
-            String tray = scanner.next().toUpperCase();
+            System.out.printf("Please enter the letters in your tray (represent blank tiles with '~'): ");
+            String tray = scanner.nextLine().toUpperCase();
             if (tray.length() > Utils.MAX_TRAY_SIZE) {
                 System.out.printf("Please enter %d letters or fewer", Utils.MAX_TRAY_SIZE);
                 continue;
@@ -171,7 +187,7 @@ public class Main {
         }
     }
 
-    private void displaySuggestionsToUser(Set<Word> possibleWords) {
+    private Word displaySuggestionsToUser(Set<Word> possibleWords) {
         List<Word> sortedPossibleWords = Utils.sortWordsByRating(possibleWords);
 
         //display top 10 suggestions sorted by highest score last
@@ -179,8 +195,10 @@ public class Main {
         System.out.printf("\nBest plays are: \n");
 
         int wordsPassed = 0;
+        Word bestWord = null;
         for (Word word : sortedPossibleWords) {
-            if (wordsPassed > numberOfSuggestions - 10) {
+            bestWord = word;
+            if (wordsPassed > numberOfSuggestions - 10 || numberOfSuggestions < 10) {
                 int[] letterLocations = word.getLocations();
                 String[] coordinatesToPrint = new String[letterLocations.length];
                 for (int index = 0; index < letterLocations.length; index++) {
@@ -200,6 +218,7 @@ public class Main {
             }
             wordsPassed += 1;
         }
+        return bestWord;
     }
 
     private int getIterationCountFromUser() {

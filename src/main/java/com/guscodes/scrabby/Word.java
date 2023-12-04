@@ -62,6 +62,7 @@ public class Word implements Comparable {
 
     public void setScore(int score) {
         this.score = score;
+        this.rating = score * 1000;
     }
 
     public void setLocations(int[] locations) {
@@ -90,10 +91,6 @@ public class Word implements Comparable {
 
     public int getRating() {
         return rating;
-    }
-
-    public void setRating(int rating) {
-        this.rating = rating;
     }
 
     public void modifyRatingByFactor(double factor) {
