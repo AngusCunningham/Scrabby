@@ -89,7 +89,7 @@ public class VirtualPlayer implements Player {
         return consecutivePassCount;
     }
     private void replenishTray() {
-        int numLettersToTake = Utils.MAX_TRAY_SIZE - tray.length();
+        int numLettersToTake = Data.MAX_TRAY_SIZE - tray.length();
         int numLettersTaken = 0;
         while (numLettersTaken < numLettersToTake) {
             try {

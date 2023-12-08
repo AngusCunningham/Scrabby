@@ -53,19 +53,19 @@ public class Board {
 
             if (location > 14) {
                 // if square is not on top row
-                square.setAbove(squares[Utils.sAbove(location)]);
+                square.setAbove(squares[Utils.locationAbove(location)]);
             }
             if (location < 210) {
                 // if square is not on bottom row
-                square.setBelow(squares[Utils.sBelow(location)]);
+                square.setBelow(squares[Utils.locationBelow(location)]);
             }
             if (location % 15 != 0) {
                 // if square is not on leftmost column
-                square.setLeft(squares[Utils.sLeft(location)]);
+                square.setLeft(squares[Utils.locationToLeft(location)]);
             }
             if ((location + 1) % 15 != 0) {
                 // if square is not on rightmost column
-                square.setRight(squares[Utils.sRight(location)]);
+                square.setRight(squares[Utils.locationToRight(location)]);
             }
         }
         refresh();

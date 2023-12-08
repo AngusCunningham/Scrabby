@@ -107,7 +107,7 @@ public class Scorer {
             wordScore += letterScore;
         }
 
-        if (newLettersAdded == Utils.EMPTY_RACK_BONUS) {
+        if (newLettersAdded == Data.EMPTY_RACK_BONUS) {
             //System.out.printf("Empty rack bonus applied to %s!", word);
             return (wordScore * wordMultiplier) + 50;
         }

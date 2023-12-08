@@ -3,52 +3,35 @@ package com.guscodes.scrabby;
 import java.util.*;
 
 public class Utils {
-    public static final int MAX_TRAY_SIZE = 7;
-    public static final int EMPTY_RACK_BONUS = 7;
-    public static final char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
-
-    public static final String[] RETAINS = "RETAINS".split("");
-    public static final List<String> IDEAL_TRAY_LETTERS = Arrays.asList(RETAINS);
-
-    public static HashSet<Character> getAlphabetSet() {
-        HashSet<Character> setty = new HashSet<>();
-        for (char letter : ALPHABET) {
-            setty.add(letter);
-        }
-        return setty;
-    }
-
-
-
 
     //board navigation static functions
-    public static int sAbove(int location) throws IndexOutOfBoundsException {
+    public static int locationAbove(int location) throws IndexOutOfBoundsException {
         if (location > 14) return location - 15;
         throw new IndexOutOfBoundsException("No square above this one as it is at the top of the board");
     }
 
-    public static int sBelow(int location) throws IndexOutOfBoundsException {
+    public static int locationBelow(int location) throws IndexOutOfBoundsException {
         if (location + 15 < 225) return location + 15;
         throw new IndexOutOfBoundsException("No square below this one as it is at the bottom of the board");
     }
 
-    public static int sRight(int location) throws IndexOutOfBoundsException {
+    public static int locationToRight(int location) throws IndexOutOfBoundsException {
         if ((location + 1) % 15 != 0) return location + 1;
         else {
             throw new IndexOutOfBoundsException("No square right of this one as it is at the right of the board");
         }
     }
 
-    public static int sLeft(int location) throws IndexOutOfBoundsException {
+    public static int locationToLeft(int location) throws IndexOutOfBoundsException {
         if (location % 15 != 0) return location - 1;
         throw new IndexOutOfBoundsException("No square left of this one as it is at the left of the board");
     }
 
-    public static int sLocation(int col, int row) {
+    public static int toBoardLocation(int col, int row) {
         return (row * 15) + col;
     }
 
-    public static int[] sCoordinates(int location) {
+    public static int[] toBoardCoordinates(int location) {
         int col = 0;
         int row = 0;
 
@@ -67,7 +50,7 @@ public class Utils {
             IllegalArgumentException {
         if (orientation == 'H') {
             try {
-                return sRight(location);
+                return locationToRight(location);
             }
             catch (IndexOutOfBoundsException e) {
                 throw new IndexOutOfBoundsException("Next square horizontally would be off the board");
@@ -75,7 +58,7 @@ public class Utils {
         }
         if (orientation == 'V') {
             try{
-                return sBelow(location);
+                return locationBelow(location);
             }
             catch (IndexOutOfBoundsException e) {
                 throw new IndexOutOfBoundsException("Next square vertically would be off the board");
@@ -90,14 +73,14 @@ public class Utils {
             IllegalArgumentException {
         if (orientation == 'H') {
             try {
-                return sLeft(location);
+                return locationToLeft(location);
             } catch (IndexOutOfBoundsException e) {
                 throw new IndexOutOfBoundsException("Last square horizontally would be off the board");
             }
         }
         if (orientation == 'V') {
             try {
-                return sAbove(location);
+                return locationAbove(location);
             } catch (IndexOutOfBoundsException e) {
                 throw new IndexOutOfBoundsException("Last square vertically would be off the board");
             }
@@ -108,7 +91,7 @@ public class Utils {
 
     public static int[] letterLocations(String word, int startCol, int startRow, char orientation) {
         int wordLength = word.length();
-        int startLocation = sLocation(startCol, startRow);
+        int startLocation = toBoardLocation(startCol, startRow);
         int[] letterLocations = new int[word.length()];
 
         letterLocations[0] = startLocation;
@@ -121,24 +104,8 @@ public class Utils {
     }
 
     public static int[] letterLocations(String word, int startLocation, char orientation) {
-        int[] coordinates = sCoordinates(startLocation);
+        int[] coordinates = toBoardCoordinates(startLocation);
         return letterLocations(word, coordinates[0], coordinates[1], orientation);
-    }
-
-
-    public static int distanceBetween(int location1, int location2) throws IllegalArgumentException {
-        int[] coord1 = sCoordinates(location1);
-        int[] coord2 = sCoordinates(location2);
-
-        if (coord1[0] == coord2[0]) {
-            return coord1[1] - coord2[1];
-        }
-        else if (coord1[1] == coord2[1]) {
-            return coord1[0] - coord2[0];
-        }
-        else {
-            throw new IllegalArgumentException("Cannot calculate distance between squares on different rows/cols");
-        }
     }
 
     public static List<Word> sortWordsByRating(Collection<Word> wordsToSort) {

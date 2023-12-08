@@ -101,8 +101,8 @@ public class UserInterface {
         while (true) {
             System.out.printf("Please enter the letters in your tray (represent blank tiles with '~'): ");
             String tray = scanner.nextLine().toUpperCase();
-            if (tray.length() > Utils.MAX_TRAY_SIZE) {
-                System.out.printf("Please enter %d letters or fewer", Utils.MAX_TRAY_SIZE);
+            if (tray.length() > Data.MAX_TRAY_SIZE) {
+                System.out.printf("Please enter %d letters or fewer", Data.MAX_TRAY_SIZE);
                 continue;
             }
             return tray;
@@ -124,7 +124,7 @@ public class UserInterface {
                 int[] letterLocations = word.getLocations();
                 String[] coordinatesToPrint = new String[letterLocations.length];
                 for (int index = 0; index < letterLocations.length; index++) {
-                    coordinatesToPrint[index] = Arrays.toString(Utils.sCoordinates(letterLocations[index]));
+                    coordinatesToPrint[index] = Arrays.toString(Utils.toBoardCoordinates(letterLocations[index]));
                 }
                 String directionWord = "UNSET";
                 if (word.getOrientation() == 'H') {

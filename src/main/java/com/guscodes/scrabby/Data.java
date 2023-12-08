@@ -15,4 +15,9 @@ public class Data {
     public static final Set<Integer> TLS_LOCATIONS = new HashSet<>(Arrays.asList(TLS_LOCATIONS_ARRAY));
     public static final Set<Integer> DWS_LOCATIONS = new HashSet<>(Arrays.asList(DWS_LOCATIONS_ARRAY));
     public static final Set<Integer> TWS_LOCATIONS = new HashSet<>(Arrays.asList(TWS_LOCATIONS_ARRAY));
+
+    public static final int MAX_TRAY_SIZE = 7;
+    public static final int EMPTY_RACK_BONUS = 7;
+    public static final char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+
 }

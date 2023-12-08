@@ -167,7 +167,7 @@ public class CoreValidator implements Validator {
             }
         }
 
-        int[] newStartCoordinates = Utils.sCoordinates(newStart);
+        int[] newStartCoordinates = Utils.toBoardCoordinates(newStart);
         int[] incidentalSquares = Utils.letterLocations(incidentalFormed, newStartCoordinates[0], newStartCoordinates[1], orientation);
         Word inlineIncidental = new Word();
         inlineIncidental.setWord(incidentalFormed);
@@ -201,7 +201,7 @@ public class CoreValidator implements Validator {
                     }
                 }
 
-                int[] newStartCoordinates = Utils.sCoordinates(newStart);
+                int[] newStartCoordinates = Utils.toBoardCoordinates(newStart);
                 int[] incidentalSquares = Utils.letterLocations(incidentalFormed, newStartCoordinates[0],
                         newStartCoordinates[1], perpendicularOrientation);
 

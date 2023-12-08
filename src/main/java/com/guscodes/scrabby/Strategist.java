@@ -72,7 +72,7 @@ public class Strategist {
     }
 
     private int rateBlankUsage(Word word) {
-        if (word.getTrayLettersUsed().size() < Utils.MAX_TRAY_SIZE && word.getScore() < 50) {
+        if (word.getTrayLettersUsed().size() < Data.EMPTY_RACK_BONUS && word.getScore() < 50) {
             for (String tile : word.getTrayLettersUsed()) {
                 if (Character.isLowerCase(tile.charAt(0))) {
                     return 0;
@@ -121,7 +121,7 @@ public class Strategist {
     private int rateRETAINSQuality(Word word, String originalTray) {
         String remainingTray = getTrayLeave(originalTray, word.getTrayLettersUsed());
 
-        int trayRating = Utils.MAX_TRAY_SIZE;
+        int trayRating = Data.MAX_TRAY_SIZE;
         for (char letter : remainingTray.toCharArray()) {
             if (! Arrays.asList( "RETAINS~".split("")).contains(letter)) {
                 trayRating -= 1;

@@ -25,7 +25,6 @@ public class Generator {
     }
 
     public Set<Word> getSuggestions(String tray, Board board) {
-        int tilesDown = board.getPlayedLocations().size();
 
         if (verbose) {
             System.out.println("Scrabby is thinking.....");
@@ -83,7 +82,7 @@ public class Generator {
         }
 
         if (blankCount > 0) {
-            for (char letter : Utils.ALPHABET) {
+            for (char letter : Data.ALPHABET) {
                 String newTray = tray + Character.toLowerCase(letter);
                 trayVersions.add(newTray);
             }
@@ -92,7 +91,7 @@ public class Generator {
         if (blankCount > 1) {
             Set<String> copyOfTrayVersions = new HashSet<>(trayVersions);
             for (String copyOfTray : copyOfTrayVersions) {
-                for (char letter : Utils.ALPHABET) {
+                for (char letter : Data.ALPHABET) {
                     String newTray = copyOfTray + Character.toLowerCase(letter);
                     trayVersions.add(newTray);
                 }
