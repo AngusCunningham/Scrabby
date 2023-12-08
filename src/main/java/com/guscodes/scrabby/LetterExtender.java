@@ -11,7 +11,7 @@ public class LetterExtender {
         rootNode = dictHandler.getTrieRoot();
     }
 
-    public Set<Word> getLegalMovesAnchoredAt(int startLocation, List<String> tray) {
+    public Set<Word> getAllLegalMovesFrom(int startLocation, List<String> tray) {
         this.wordsFound.clear();
         extendAfter(rootNode, startLocation, 'H', startLocation, tray, "");
         extendAfter(rootNode, startLocation, 'V', startLocation, tray, "");

@@ -24,7 +24,7 @@ public class VirtualPlayer implements Player {
     public void takeTurn() {
 
         // get suggestions based on the current tray
-        Set<Word> suggestedPlays = generator.getSuggestions(tray);
+        Set<Word> suggestedPlays = generator.getSuggestions(tray, board);
 
         // if there are no valid suggestions...
         if (suggestedPlays.size() == 0) {

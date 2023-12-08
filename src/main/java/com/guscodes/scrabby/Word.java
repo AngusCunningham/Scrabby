@@ -93,8 +93,8 @@ public class Word implements Comparable {
         return rating;
     }
 
-    public void modifyRatingByFactor(double factor) {
-        int newRating = (int) Math.round(rating * factor);
+    public void modifyRatingByMultiplier(double multiplier) {
+        int newRating = (int) Math.round(rating * multiplier);
         rating = newRating;
     }
 

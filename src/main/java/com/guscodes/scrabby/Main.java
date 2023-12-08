@@ -31,8 +31,8 @@ public class Main {
             Scorer scorer = new Scorer(board);
             LetterExtender letterExtender = new LetterExtender(board.getSquares(), dictHandler);
             Validator validator = new Validator(board, dictHandler.getDictionary());
-            Generator generator = new Generator(letterExtender, validator, scorer, true,
-                    0);
+            Generator generator = new Generator(letterExtender, validator, scorer, false,
+                    0, true, board);
             Word topRecommendation = null;
 
             //Main loop
@@ -55,12 +55,19 @@ public class Main {
                         int startCol = mainThread.getStartColFromUser();
                         int startRow = mainThread.getStartRowFromUser();
 
+                        int[] letterLocations = {0};
+
                         try {
-                            Word wordToAdd = new Word(word, Utils.letterLocations(word, startCol, startRow, orientation),
-                                    orientation);
-                            board.addWord(wordToAdd);
-                        } catch (IllegalArgumentException e) {
-                            System.out.println("That play was not valid, please make a new choice\n");
+                            letterLocations = Utils.letterLocations(word, startCol, startRow, orientation);
+                            try {
+                                Word wordToAdd = new Word(word, letterLocations, orientation);
+                                board.addWord(wordToAdd);
+                            } catch (IllegalArgumentException e) {
+                                System.out.println("That play was not valid, please make a new choice\n");
+                            }
+                        }
+                        catch (IndexOutOfBoundsException e) {
+                            System.out.println("Can't play there, word would be off the board\n");
                         }
                     }
                 }
@@ -74,7 +81,7 @@ public class Main {
                     //generate suggestions based on tray
                     Set<Word> possibleWords;
                     try {
-                        possibleWords = generator.getSuggestions(tray);
+                        possibleWords = generator.getSuggestions(tray, board);
                     } catch (IllegalStateException e) {
                         System.out.println("Too many blanks in the tray given, maximum of two!");
                         continue;
@@ -128,8 +135,8 @@ public class Main {
 
     private char getOrientationFromUser() {
         while (true) {
-            System.out.println("(H)orizontally or (V)ertically?");
-            String orientationString = scanner.next().toUpperCase();
+            System.out.printf("(H)orizontally or (V)ertically? ");
+            String orientationString = scanner.nextLine().toUpperCase();
             if (!(orientationString.equals("H")) && !(orientationString.equals("V"))) {
                 System.out.println("Please only enter the letter H or V");
                 continue;
@@ -142,16 +149,16 @@ public class Main {
 
     private int getStartColFromUser() {
         while (true) {
-            System.out.println("Column word starts in (enter a number between 0 and 14): ");
+            System.out.printf("Column word starts in (enter a number between 0 and 14): ");
             try {
-                int startCol = scanner.nextInt();
+                int startCol = Integer.parseInt(scanner.nextLine());
                 if (startCol < 0 || startCol > 14) {
                     System.out.println("Please only enter a number between 0 and 14 (inclusive)");
                     continue;
                 }
                 return startCol;
             }
-            catch (InputMismatchException e) {
+            catch (NumberFormatException e) {
                 System.out.println("Please only enter a number between 0 and 14 (inclusive)");
             }
         }
@@ -160,16 +167,16 @@ public class Main {
     private int getStartRowFromUser() {
         while (true) {
             //find the starting row
-            System.out.println("Row word starts in (enter a number between 0 and 14): ");
+            System.out.printf("Row word starts in (enter a number between 0 and 14): ");
             try {
-                int startRow = scanner.nextInt();
+                int startRow = Integer.parseInt(scanner.nextLine());
                 if (startRow < 0 || startRow > 14) {
                     System.out.println("Please only enter a number between 0 and 14 (inclusive)");
                     continue;
                 }
                 return startRow;
             }
-            catch (InputMismatchException e) {
+            catch (NumberFormatException e) {
                 System.out.println("Please only enter a number between 0 and 14 (inclusive)");
             }
         }

@@ -19,12 +19,13 @@ public class SimulatedGame {
 
     public void simulateNGames(int n) {
 
-        double[] testParameterValues = {0, 1, 0.5, 0.25, 0.75, 2, 3}; //
+        double[] testParameterValues = {0.05, 0.1, 0.15, 0.095, 0.25, 0.3};
 
         HashMap<Double, Double> finalResults = new HashMap<>();
 
         for (double testValue : testParameterValues) {
             finalResults.put(testValue, 0.0);
+
         }
 
         int valuesExamined = 0;
@@ -71,8 +72,8 @@ public class SimulatedGame {
         TileBag tileBag = new TileBag();
         LetterExtender letterExtender = new LetterExtender(board.getSquares(), dictHandler);
 
-        Generator baseGen = new Generator(letterExtender, validator, scorer, false, 0);
-        Generator testGen = new Generator(letterExtender, validator, scorer, true, testParameter);
+        Generator baseGen = new Generator(letterExtender, validator, scorer, false, 0, false, board);
+        Generator testGen = new Generator(letterExtender, validator, scorer, true, testParameter, false, board);
 
         VirtualPlayer controlPlayer = new VirtualPlayer(baseGen, board, tileBag, scorer);
         VirtualPlayer testPlayer = new VirtualPlayer(testGen, board, tileBag, scorer);
