@@ -3,7 +3,7 @@ package com.guscodes.scrabby;
 import java.util.*;
 
 public class Generator {
-    private Validator validator;
+    private CoreValidator coreValidator;
     private Scorer scorer;
     private LetterExtender letEx;
     boolean useExperimentalFeatures;
@@ -12,9 +12,9 @@ public class Generator {
     Board board;
     Strategist strategist;
 
-    public Generator(LetterExtender letterExtender, Validator validator, Scorer scorer,
+    public Generator(LetterExtender letterExtender, CoreValidator coreValidator, Scorer scorer,
                      boolean useExperimentalFeatures, double testParameter, boolean verbose, Board board) {
-        this.validator = validator;
+        this.coreValidator = coreValidator;
         this.scorer = scorer;
         this.useExperimentalFeatures = useExperimentalFeatures;
         this.testParameter = (float) testParameter;
@@ -109,8 +109,8 @@ public class Generator {
     private Set<Word> filterValidateAndScore(Set<Word> potentialWords) {
         Set<Word> checkedWords = new HashSet<>();
         for (Word word : potentialWords) {
-            Word[] checked = validator.checkValidity(word);
-            if (validator.checkValidity(word) == null) {
+            Word[] checked = coreValidator.getIncidentals(word);
+            if (coreValidator.getIncidentals(word) == null) {
                 continue;
             }
             Word checkedWord = checked[0];

@@ -5,11 +5,6 @@ import java.util.*;
 public class Board {
 
     //bonus square locations
-    private int[] doubleLetters = {3, 11, 36, 38, 45, 52, 59, 92, 96, 98, 102, 108, 116, 122, 126, 128, 132, 165, 172,
-            179, 186, 188, 213, 221};
-    private int[] tripleLetters = {20, 24, 76, 80, 84, 88, 136, 140, 144, 148, 200, 204};
-    private int[] doubleWords = {16, 28, 32, 42, 48, 56, 64, 70, 112, 154, 160, 168, 176, 182, 192, 196, 208};
-    private int[] tripleWords = {0, 7, 14, 105, 119, 210, 217, 224};
 
     //keeping track of squares, words etc
     private Square[] squares = new Square[225];
@@ -19,38 +14,38 @@ public class Board {
 
     //dependencies
     private DictHandler dictHandler;
-    private Validator validator;
+    private CoreValidator coreValidator;
     private Scorer scorer = new Scorer(this);
 
-    public Board(DictHandler dictHandler) {
-        for (int count = 0; count < 225; count++) {
-            this.dictHandler = dictHandler;
-            this.validator = new Validator(this, dictHandler.getDictionary());
+    public Board(DictHandler dictHandler, CoreValidator coreValidator) {
+        this.dictHandler = dictHandler;
+        this.coreValidator = coreValidator;
 
-            Square newSquare = new Square(count);
+        for (int squareLocation = 0; squareLocation < 225; squareLocation++) {
+            Square newSquare = new Square(squareLocation);
 
-            if (Utils.arrayContainsInt(doubleLetters, count)) {
+            if (Data.DLS_LOCATIONS.contains(squareLocation)) {
                 newSquare.setBonus('l');
             }
-            else if (Utils.arrayContainsInt(tripleLetters, count)) {
+            else if (Data.TLS_LOCATIONS.contains(squareLocation)) {
                 newSquare.setBonus('L');
             }
-            else if (Utils.arrayContainsInt(doubleWords, count)) {
+            else if (Data.DWS_LOCATIONS.contains(squareLocation)) {
                 newSquare.setBonus('w');
             }
-            else if (Utils.arrayContainsInt(tripleWords, count)) {
+            else if (Data.TWS_LOCATIONS.contains(squareLocation)) {
                 newSquare.setBonus('W');
             }
             else {
                 newSquare.setBonus('O');
             }
 
-            if (count == 112){
+            if (squareLocation == 112){
                 // mark the centre square as anchorable
                 newSquare.setAnchorable();
             }
 
-            squares[count] = newSquare;
+            squares[squareLocation] = newSquare;
         }
 
         for (Square square : squares) {
@@ -157,7 +152,7 @@ public class Board {
     }
 
     public void addWord(Word word) throws IllegalArgumentException {
-        Word[] incidentalsFormed = validator.checkValidity(word);
+        Word[] incidentalsFormed = coreValidator.getIncidentals(word);
         if (incidentalsFormed == null) {
             throw new IllegalArgumentException("Suggested play is not valid");
         }

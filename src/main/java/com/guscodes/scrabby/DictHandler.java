@@ -7,7 +7,7 @@ public class DictHandler {
     private Set<String> dictionary = buildDictionary();
     private Trie dictTrie = new Trie(dictionary);
 
-    public Set<String> getDictionary() {
+    public Set<String> getAllWords() {
         return this.dictionary;
     }
     public Set<String> searchTrie(String prefix) {

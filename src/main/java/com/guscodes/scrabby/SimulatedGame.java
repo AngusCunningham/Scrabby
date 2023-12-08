@@ -68,12 +68,12 @@ public class SimulatedGame {
     private void playOneRound(double testParameter) {
         Board board = new Board(dictHandler);
         Scorer scorer = new Scorer(board);
-        Validator validator = new Validator(board, dictHandler.getDictionary());
+        CoreValidator coreValidator = new CoreValidator(board, dictHandler.getAllWords());
         TileBag tileBag = new TileBag();
         LetterExtender letterExtender = new LetterExtender(board.getSquares(), dictHandler);
 
-        Generator baseGen = new Generator(letterExtender, validator, scorer, false, 0, false, board);
-        Generator testGen = new Generator(letterExtender, validator, scorer, true, testParameter, false, board);
+        Generator baseGen = new Generator(letterExtender, coreValidator, scorer, false, 0, false, board);
+        Generator testGen = new Generator(letterExtender, coreValidator, scorer, true, testParameter, false, board);
 
         VirtualPlayer controlPlayer = new VirtualPlayer(baseGen, board, tileBag, scorer);
         VirtualPlayer testPlayer = new VirtualPlayer(testGen, board, tileBag, scorer);
