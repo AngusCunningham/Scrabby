@@ -10,7 +10,7 @@ public class Board {
     //keeping track of squares, words etc
     private Square[] squares = new Square[225];
     private Set<Square> anchorableSquares = new HashSet<>();
-    private List<Word> playedWords = new ArrayList<>();
+    private Set<Word> playedWords = new HashSet<>();
     private List<Square> playedSquares = new ArrayList<>();
 
     private List<Board> states = new ArrayList<>();
@@ -217,7 +217,7 @@ public class Board {
         }
 
         for (Board board : this.states) {
-            boardDeepCopy.states.add(board.deepCopy());
+            boardDeepCopy.states.add(board);
         }
 
         return boardDeepCopy;

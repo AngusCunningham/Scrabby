@@ -12,7 +12,7 @@ public class UserInterface {
     }
     String getModeFromUser() {
         //get functionality from user, loop only used to deal with invalid input
-        System.out.printf("Enter (D)iagnostic mode?");
+        System.out.println("Press the Return key to start a new game");
         String mode = scanner.nextLine().toUpperCase();
         return mode;
     }
