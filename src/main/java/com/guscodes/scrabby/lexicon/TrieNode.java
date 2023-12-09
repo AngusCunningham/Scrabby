@@ -1,4 +1,4 @@
-package com.guscodes.scrabby;
+package com.guscodes.scrabby.lexicon;
 
 import java.util.HashMap;
 

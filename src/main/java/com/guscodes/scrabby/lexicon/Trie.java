@@ -1,8 +1,7 @@
-package com.guscodes.scrabby;
+package com.guscodes.scrabby.lexicon;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class Trie {

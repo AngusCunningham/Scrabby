@@ -1,4 +1,4 @@
-package com.guscodes.scrabby;
+package com.guscodes.scrabby.gameitems;
 
 import java.util.ArrayList;
 import java.util.List;

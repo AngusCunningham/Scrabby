@@ -1,9 +1,9 @@
-package com.guscodes.scrabby;
+package com.guscodes.scrabby.lexicon;
 
 import java.io.InputStream;
 import java.util.*;
 
-public class DictHandler {
+public class WordHandler {
     private Set<String> dictionary = buildDictionary();
     private Trie dictTrie = new Trie(dictionary);
 

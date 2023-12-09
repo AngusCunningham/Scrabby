@@ -1,5 +1,7 @@
 package com.guscodes.scrabby;
 
+import com.guscodes.scrabby.gameitems.Word;
+
 import java.util.*;
 
 public class UserInterface {

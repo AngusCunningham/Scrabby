@@ -1,9 +1,17 @@
-package com.guscodes.scrabby;
+package com.guscodes.scrabby.simulation;
+
+import com.guscodes.scrabby.Data;
+import com.guscodes.scrabby.Utils;
+import com.guscodes.scrabby.gameitems.Word;
+import com.guscodes.scrabby.analysis.Scorer;
+import com.guscodes.scrabby.gameitems.Board;
+import com.guscodes.scrabby.gameitems.TileBag;
+import com.guscodes.scrabby.generation.Generator;
 
 import java.util.List;
 import java.util.Set;
 
-public class VirtualPlayer implements Player {
+public class VirtualPlayer {
     private Generator generator;
     private Board board;
     private TileBag tileBag;
@@ -20,7 +28,7 @@ public class VirtualPlayer implements Player {
         replenishTray();
     }
 
-    @Override
+
     public void takeTurn() {
 
         // get suggestions based on the current tray

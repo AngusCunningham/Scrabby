@@ -1,11 +1,16 @@
-package com.guscodes.scrabby;
+package com.guscodes.scrabby.analysis;
+
+import com.guscodes.scrabby.gameitems.Square;
+import com.guscodes.scrabby.Utils;
+import com.guscodes.scrabby.gameitems.Word;
+import com.guscodes.scrabby.gameitems.Board;
 
 import java.util.*;
 
-public class CoreValidator implements Validator {
+public class Validator implements Validator {
     private Board board;
     private Set<String> dictionary;
-    public CoreValidator(Set<String> dictionary) {
+    public Validator(Set<String> dictionary) {
         this.dictionary = dictionary;
     }
 

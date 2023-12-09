@@ -1,5 +1,14 @@
 package com.guscodes.scrabby;
 
+import com.guscodes.scrabby.analysis.Validator;
+import com.guscodes.scrabby.analysis.Scorer;
+import com.guscodes.scrabby.gameitems.Board;
+import com.guscodes.scrabby.gameitems.Word;
+import com.guscodes.scrabby.generation.Generator;
+import com.guscodes.scrabby.generation.MoveFinder;
+import com.guscodes.scrabby.lexicon.WordHandler;
+import com.guscodes.scrabby.simulation.SimulatedGame;
+
 import java.util.*;
 
 public class Main {
@@ -7,8 +16,9 @@ public class Main {
         //Dependencies
         Scanner scanner = new Scanner(System.in);
         UserInterface ui = new UserInterface(scanner);
-        DictHandler dictHandler = new DictHandler();
-        Validator validator = new CoreValidator(dictHandler.getAllWords());
+        WordHandler wordHandler = new WordHandler();
+        Validator validator = new Validator(wordHandler.getAllWords());
+        Scorer scorer = new Scorer();
 
         String welcomeString = "\nWelcome to Scrabby, your scrabble word finder\n";
         System.out.println(welcomeString);
@@ -17,21 +27,17 @@ public class Main {
         String mode = ui.getModeFromUser();
 
         if (mode.equals("D")) {
-
             int maxIterations = ui.getIterationCountFromUser();
-            SimulatedGame sim = new SimulatedGame(dictHandler);
-
+            SimulatedGame sim = new SimulatedGame(wordHandler, validator, scorer);
             sim.simulateNGames(maxIterations);
-
             System.out.println("\n\nSimulations Complete!");
         }
 
         else {
-            Board board = new Board(dictHandler, validator);
-            Scorer scorer = new Scorer(board);
-            LetterExtender letterExtender = new LetterExtender(board.getSquares(), dictHandler);
-            CoreValidator coreValidator = new CoreValidator(board, dictHandler.getAllWords());
-            Generator generator = new Generator(letterExtender, coreValidator, scorer, false,
+            Board board = new Board(validator, scorer, true);
+
+            MoveFinder moveFinder = new MoveFinder(board.getSquares(), wordHandler);
+            Generator generator = new Generator(moveFinder, validator, scorer, false,
                     0, true, board);
             Word topRecommendation = null;
 

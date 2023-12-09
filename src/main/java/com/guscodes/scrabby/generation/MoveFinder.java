@@ -1,14 +1,20 @@
-package com.guscodes.scrabby;
+package com.guscodes.scrabby.generation;
+
+import com.guscodes.scrabby.gameitems.Square;
+import com.guscodes.scrabby.Utils;
+import com.guscodes.scrabby.gameitems.Word;
+import com.guscodes.scrabby.lexicon.WordHandler;
+import com.guscodes.scrabby.lexicon.TrieNode;
 
 import java.util.*;
 
-public class LetterExtender {
+public class MoveFinder {
     private Square[] boardSquares;
     private Set<Word> wordsFound = new HashSet<>();
     private TrieNode rootNode;
-    public LetterExtender(Square[] boardSquares, DictHandler dictHandler) {
+    public MoveFinder(Square[] boardSquares, WordHandler wordHandler) {
         this.boardSquares = boardSquares;
-        rootNode = dictHandler.getTrieRoot();
+        rootNode = wordHandler.getTrieRoot();
     }
 
     public Set<Word> getAllLegalMovesFrom(int startLocation, List<String> tray) {
@@ -53,7 +59,7 @@ public class LetterExtender {
                         }
                     }
                     catch (IllegalArgumentException e) {
-                        System.out.println("Orientation used in LetterExtender must only be 'H' or 'V'");
+                        System.out.println("Orientation used in MoveFinder must only be 'H' or 'V'");
                     }
                 }
             }
@@ -74,7 +80,7 @@ public class LetterExtender {
                 }
             }
             catch (IllegalArgumentException e) {
-                System.out.println("Orientation used in LetterExtender must only be 'H' or 'V'");
+                System.out.println("Orientation used in MoveFinder must only be 'H' or 'V'");
             }
         }
     }

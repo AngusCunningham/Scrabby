@@ -1,25 +1,30 @@
-package com.guscodes.scrabby;
+package com.guscodes.scrabby.gameitems;
+
+import com.guscodes.scrabby.*;
+import com.guscodes.scrabby.analysis.Validator;
+import com.guscodes.scrabby.analysis.Scorer;
+import com.guscodes.scrabby.lexicon.WordHandler;
 
 import java.util.*;
 
 public class Board {
-
-    //bonus square locations
-
     //keeping track of squares, words etc
     private Square[] squares = new Square[225];
     private Set<Square> anchorableSquares = new HashSet<>();
     private List<Word> playedWords = new ArrayList<>();
     private List<Square> playedSquares = new ArrayList<>();
 
-    //dependencies
-    private DictHandler dictHandler;
-    private CoreValidator coreValidator;
-    private Scorer scorer = new Scorer(this);
+    private List<Board> states = new ArrayList<>();
 
-    public Board(DictHandler dictHandler, CoreValidator coreValidator) {
-        this.dictHandler = dictHandler;
-        this.coreValidator = coreValidator;
+    //dependencies
+    private Validator validator;
+    private Scorer scorer;
+    boolean verbose;
+
+    public Board(Validator validator, Scorer scorer, boolean verbose) {
+        this.validator = validator;
+        this.scorer = scorer;
+        this.verbose = verbose;
 
         for (int squareLocation = 0; squareLocation < 225; squareLocation++) {
             Square newSquare = new Square(squareLocation);
@@ -122,15 +127,6 @@ public class Board {
         return this.playedWords;
     }
 
-    public int[] getAllLocations() {
-        int[] allLocations = new int[squares.length];
-        for (Square square : squares) {
-            int location = square.getLocation();
-            allLocations[location] = location;
-        }
-        return allLocations;
-    }
-
     public Set<Integer> getPlayedLocations() {
         Set<Integer> playedLocations = new HashSet<>();
         for (int index = 0; index < playedSquares.size(); index++) {
@@ -152,10 +148,11 @@ public class Board {
     }
 
     public void addWord(Word word) throws IllegalArgumentException {
-        Word[] incidentalsFormed = coreValidator.getIncidentals(word);
+        Word[] incidentalsFormed = validator.getIncidentals(word, this);
         if (incidentalsFormed == null) {
             throw new IllegalArgumentException("Suggested play is not valid");
         }
+
         Word mainWord = incidentalsFormed[0];
         char[] wordLetters = mainWord.getWord().toCharArray();
         int[] letterLocations = mainWord.getLocations();
@@ -165,15 +162,20 @@ public class Board {
             squares[letterLocations[index]].setContents(wordLetters[index]);
         }
 
-        int score = scorer.getScore(incidentalsFormed);
+        int score = scorer.getTotalScore(incidentalsFormed, this);
 
         for (Word playedWord : incidentalsFormed) {
             playedWords.add(playedWord);
         }
+
         for (int location : letterLocations) {
             playedSquares.add(squares[location]);
         }
-        //System.out.printf("%s played, scoring %d \n", mainWord.getWord(), score);
+
+        if (verbose) {
+            System.out.printf("%s played, scoring %d \n", mainWord.getWord(), score);
+        }
+
         refresh();
     }
 

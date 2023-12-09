@@ -1,4 +1,9 @@
-package com.guscodes.scrabby;
+package com.guscodes.scrabby.generation;
+
+import com.guscodes.scrabby.Data;
+import com.guscodes.scrabby.analysis.Scorer;
+import com.guscodes.scrabby.gameitems.Word;
+import com.guscodes.scrabby.gameitems.Board;
 
 import java.util.*;
 
@@ -86,7 +91,7 @@ public class Strategist {
     private int rateRemainingTrayInEndgame(Word word) {
         int fromTrayTotalPoints = 0;
         for (String letter : word.getTrayLettersUsed()) {
-            fromTrayTotalPoints += scorer.getLetterScore(letter.charAt(0));
+            fromTrayTotalPoints += Data.LETTER_SCORES.get(letter.charAt(0));
         }
         return fromTrayTotalPoints;
     }

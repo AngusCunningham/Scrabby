@@ -1,9 +1,19 @@
-package com.guscodes.scrabby;
+package com.guscodes.scrabby.simulation;
+import com.guscodes.scrabby.analysis.Validator;
+import com.guscodes.scrabby.analysis.Scorer;
+import com.guscodes.scrabby.gameitems.Board;
+import com.guscodes.scrabby.gameitems.TileBag;
+import com.guscodes.scrabby.generation.Generator;
+import com.guscodes.scrabby.generation.MoveFinder;
+import com.guscodes.scrabby.lexicon.WordHandler;
+
 import java.awt.Toolkit;
 import java.util.HashMap;
 
 public class SimulatedGame {
-    private DictHandler dictHandler;
+    private WordHandler wordHandler;
+    private Validator validator;
+    private Scorer scorer;
 
     private int controlTotalScore;
     private int testTotalScore;
@@ -13,8 +23,10 @@ public class SimulatedGame {
     private int totalIterations;
     private int iterationsPlayed;
 
-    public SimulatedGame(DictHandler dictHandler) {
-        this.dictHandler = dictHandler;
+    public SimulatedGame(WordHandler wordHandler, Validator validator, Scorer scorer) {
+        this.wordHandler = wordHandler;
+        this.validator = validator;
+        this.scorer = scorer;
     }
 
     public void simulateNGames(int n) {
@@ -66,14 +78,12 @@ public class SimulatedGame {
     }
 
     private void playOneRound(double testParameter) {
-        Board board = new Board(dictHandler);
-        Scorer scorer = new Scorer(board);
-        CoreValidator coreValidator = new CoreValidator(board, dictHandler.getAllWords());
+        Board board = new Board(validator, scorer, false);
         TileBag tileBag = new TileBag();
-        LetterExtender letterExtender = new LetterExtender(board.getSquares(), dictHandler);
+        MoveFinder moveFinder = new MoveFinder(board.getSquares(), wordHandler);
 
-        Generator baseGen = new Generator(letterExtender, coreValidator, scorer, false, 0, false, board);
-        Generator testGen = new Generator(letterExtender, coreValidator, scorer, true, testParameter, false, board);
+        Generator baseGen = new Generator(moveFinder, validator, scorer, false, 0, false, board);
+        Generator testGen = new Generator(moveFinder, validator, scorer, true, testParameter, false, board);
 
         VirtualPlayer controlPlayer = new VirtualPlayer(baseGen, board, tileBag, scorer);
         VirtualPlayer testPlayer = new VirtualPlayer(testGen, board, tileBag, scorer);

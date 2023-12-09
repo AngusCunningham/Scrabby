@@ -1,24 +1,30 @@
-package com.guscodes.scrabby;
+package com.guscodes.scrabby.generation;
+
+import com.guscodes.scrabby.analysis.Validator;
+import com.guscodes.scrabby.Data;
+import com.guscodes.scrabby.analysis.Scorer;
+import com.guscodes.scrabby.gameitems.Word;
+import com.guscodes.scrabby.gameitems.Board;
 
 import java.util.*;
 
 public class Generator {
-    private CoreValidator coreValidator;
+    private Validator validator;
     private Scorer scorer;
-    private LetterExtender letEx;
+    private MoveFinder letEx;
     boolean useExperimentalFeatures;
     private float testParameter;
     boolean verbose;
     Board board;
     Strategist strategist;
 
-    public Generator(LetterExtender letterExtender, CoreValidator coreValidator, Scorer scorer,
+    public Generator(MoveFinder moveFinder, Validator validator, Scorer scorer,
                      boolean useExperimentalFeatures, double testParameter, boolean verbose, Board board) {
-        this.coreValidator = coreValidator;
+        this.validator = validator;
         this.scorer = scorer;
         this.useExperimentalFeatures = useExperimentalFeatures;
         this.testParameter = (float) testParameter;
-        this.letEx = letterExtender;
+        this.letEx = moveFinder;
         this.verbose = verbose;
         this.board = board;
         this.strategist = new Strategist(board, scorer);
@@ -108,13 +114,14 @@ public class Generator {
     private Set<Word> filterValidateAndScore(Set<Word> potentialWords) {
         Set<Word> checkedWords = new HashSet<>();
         for (Word word : potentialWords) {
-            Word[] checked = coreValidator.getIncidentals(word);
-            if (coreValidator.getIncidentals(word) == null) {
+            Word[] checked = validator.getIncidentals(word, board);
+            if (checked == null) {
+                // word is invalid
                 continue;
             }
             Word checkedWord = checked[0];
             checkedWord.setOrientation(word.getOrientation());
-            checkedWord.setScore(scorer.getScore(checked));
+            checkedWord.setScore(scorer.getTotalScore(checked, board));
             checkedWords.add(checkedWord);
         }
         return checkedWords;

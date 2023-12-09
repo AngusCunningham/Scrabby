@@ -1,7 +1,4 @@
-package com.guscodes.scrabby;
-
-import java.util.HashSet;
-import java.util.Hashtable;
+package com.guscodes.scrabby.gameitems;
 
 public class Square {
     private char bonus = 'X';

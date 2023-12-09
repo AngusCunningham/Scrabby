@@ -1,5 +1,7 @@
 package com.guscodes.scrabby;
 
+import com.guscodes.scrabby.gameitems.Word;
+
 import java.util.*;
 
 public class Utils {
@@ -112,12 +114,5 @@ public class Utils {
         List<Word> sortedWords = new ArrayList<>(wordsToSort);
         Collections.sort(sortedWords);
         return sortedWords;
-    }
-
-    public static boolean arrayContainsInt(int[] array, int value) {
-        for (int item : array) {
-            if (value == item) return true;
-        }
-        return false;
     }
 }
