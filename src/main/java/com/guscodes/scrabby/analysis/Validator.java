@@ -7,7 +7,7 @@ import com.guscodes.scrabby.gameitems.Board;
 
 import java.util.*;
 
-public class Validator implements Validator {
+public class Validator {
     private Board board;
     private Set<String> dictionary;
     public Validator(Set<String> dictionary) {

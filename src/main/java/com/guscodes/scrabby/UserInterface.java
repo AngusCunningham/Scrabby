@@ -23,7 +23,7 @@ public class UserInterface {
             System.out.printf("Would you like to (A)dd a word to the board or (G)et a suggestion? ");
             String action = scanner.nextLine().toUpperCase();
 
-            if (!(action.equals("A")) && !(action.equals("G"))) {
+            if (!(action.equals("A")) && !(action.equals("G")) && !(action.equals("U"))) {
                 System.out.println("Please only enter the letter A or G");
                 continue;
             }

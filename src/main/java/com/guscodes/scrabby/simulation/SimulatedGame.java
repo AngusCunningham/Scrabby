@@ -80,10 +80,10 @@ public class SimulatedGame {
     private void playOneRound(double testParameter) {
         Board board = new Board(validator, scorer, false);
         TileBag tileBag = new TileBag();
-        MoveFinder moveFinder = new MoveFinder(board.getSquares(), wordHandler);
+        MoveFinder moveFinder = new MoveFinder(wordHandler);
 
-        Generator baseGen = new Generator(moveFinder, validator, scorer, false, 0, false, board);
-        Generator testGen = new Generator(moveFinder, validator, scorer, true, testParameter, false, board);
+        Generator baseGen = new Generator(moveFinder, validator, scorer, false, 0, false);
+        Generator testGen = new Generator(moveFinder, validator, scorer, true, testParameter, false);
 
         VirtualPlayer controlPlayer = new VirtualPlayer(baseGen, board, tileBag, scorer);
         VirtualPlayer testPlayer = new VirtualPlayer(testGen, board, tileBag, scorer);

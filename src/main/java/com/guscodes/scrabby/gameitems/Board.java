@@ -3,7 +3,6 @@ package com.guscodes.scrabby.gameitems;
 import com.guscodes.scrabby.*;
 import com.guscodes.scrabby.analysis.Validator;
 import com.guscodes.scrabby.analysis.Scorer;
-import com.guscodes.scrabby.lexicon.WordHandler;
 
 import java.util.*;
 
@@ -16,7 +15,6 @@ public class Board {
 
     private List<Board> states = new ArrayList<>();
 
-    //dependencies
     private Validator validator;
     private Scorer scorer;
     boolean verbose;
@@ -124,7 +122,7 @@ public class Board {
     }
 
     public List<Word> getPlayedWords() {
-        return this.playedWords;
+        return new ArrayList<>(this.playedWords);
     }
 
     public Set<Integer> getPlayedLocations() {
@@ -152,6 +150,8 @@ public class Board {
         if (incidentalsFormed == null) {
             throw new IllegalArgumentException("Suggested play is not valid");
         }
+
+        this.states.add(deepCopy());
 
         Word mainWord = incidentalsFormed[0];
         char[] wordLetters = mainWord.getWord().toCharArray();
@@ -187,6 +187,48 @@ public class Board {
             }
         }
         this.anchorableSquares = anchorableSquaresNow;
+    }
+
+    private Board deepCopy() {
+        Board boardDeepCopy = new Board(validator, scorer, verbose);
+
+        for (Square square : this.squares) {
+            boardDeepCopy.squares[square.getLocation()].setContents(square.getContents());
+            if (square.isAnchorable()) {
+                boardDeepCopy.squares[square.getLocation()].setAnchorable();
+            }
+        }
+
+        for (Word word : this.playedWords) if (word != null) {
+            Word playedWordCopy = new Word();
+            playedWordCopy.setScore(word.getScore());
+            playedWordCopy.setWord(word.getWord());
+            playedWordCopy.setLocations(word.getLocations());
+            playedWordCopy.setOrientation(word.getOrientation());
+            boardDeepCopy.playedWords.add(word);
+        }
+
+        for (Square square : this.anchorableSquares) {
+            boardDeepCopy.anchorableSquares.add(boardDeepCopy.squares[square.getLocation()]);
+        }
+
+        for(Square square : this.playedSquares) {
+            boardDeepCopy.playedSquares.add(boardDeepCopy.squares[square.getLocation()]);
+        }
+
+        for (Board board : this.states) {
+            boardDeepCopy.states.add(board.deepCopy());
+        }
+
+        return boardDeepCopy;
+    }
+
+    public Board getPreviousState() {
+        System.out.printf("There are currently %s states saved\n", states.size());
+        Board previousState = states.get(states.size() - 1);
+        System.out.println("Previous board to revert to: ");
+        previousState.show('L');
+        return states.get(states.size() - 1);
     }
 }
 

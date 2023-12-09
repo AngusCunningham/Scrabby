@@ -87,7 +87,7 @@ public class VirtualPlayer {
         char[] remainingTiles = tray.toCharArray();
         int deductedPoints = 0;
         for (char tile : remainingTiles) {
-            deductedPoints += scorer.getLetterScore(tile);
+            deductedPoints += Data.LETTER_SCORES.get(tile);
         }
 
         score -= deductedPoints;

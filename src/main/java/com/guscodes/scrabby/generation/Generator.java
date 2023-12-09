@@ -11,7 +11,7 @@ import java.util.*;
 public class Generator {
     private Validator validator;
     private Scorer scorer;
-    private MoveFinder letEx;
+    private MoveFinder moveFinder;
     boolean useExperimentalFeatures;
     private float testParameter;
     boolean verbose;
@@ -19,18 +19,18 @@ public class Generator {
     Strategist strategist;
 
     public Generator(MoveFinder moveFinder, Validator validator, Scorer scorer,
-                     boolean useExperimentalFeatures, double testParameter, boolean verbose, Board board) {
+                     boolean useExperimentalFeatures, double testParameter, boolean verbose) {
         this.validator = validator;
         this.scorer = scorer;
         this.useExperimentalFeatures = useExperimentalFeatures;
         this.testParameter = (float) testParameter;
-        this.letEx = moveFinder;
+        this.moveFinder = moveFinder;
         this.verbose = verbose;
-        this.board = board;
-        this.strategist = new Strategist(board, scorer);
+        this.strategist = new Strategist();
     }
 
     public Set<Word> getSuggestions(String tray, Board board) {
+        this.board = board;
 
         if (verbose) {
             System.out.println("Scrabby is thinking.....");
@@ -46,7 +46,7 @@ public class Generator {
             }
 
             for (int location = 0; location < 225; location++) {
-                suggestedWords.addAll(letEx.getAllLegalMovesFrom(location, trayLetters));
+                suggestedWords.addAll(moveFinder.getAllMovesFrom(location, trayLetters, board.getSquares()));
             }
         }
 
@@ -59,7 +59,7 @@ public class Generator {
         //System.out.println("Experimental features: " + useExperimentalFeatures);
         if (useExperimentalFeatures) {
             //System.out.println("Using experimental features");
-            scoredAndValidatedSuggestions = strategist.getStrategicRatings(scoredAndValidatedSuggestions, tray, testParameter);
+            scoredAndValidatedSuggestions = strategist.getStrategicRatings(scoredAndValidatedSuggestions, tray, board, testParameter);
         }
 
         // #########################################################################################################

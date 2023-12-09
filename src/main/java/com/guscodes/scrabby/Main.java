@@ -13,7 +13,6 @@ import java.util.*;
 
 public class Main {
     public static void main (String[] args) {
-        //Dependencies
         Scanner scanner = new Scanner(System.in);
         UserInterface ui = new UserInterface(scanner);
         WordHandler wordHandler = new WordHandler();
@@ -26,23 +25,17 @@ public class Main {
         // check if suggesting mode or playing mode
         String mode = ui.getModeFromUser();
 
-        if (mode.equals("D")) {
-            int maxIterations = ui.getIterationCountFromUser();
-            SimulatedGame sim = new SimulatedGame(wordHandler, validator, scorer);
-            sim.simulateNGames(maxIterations);
-            System.out.println("\n\nSimulations Complete!");
-        }
-
-        else {
+        if (! mode.equals("D")) {
             Board board = new Board(validator, scorer, true);
 
-            MoveFinder moveFinder = new MoveFinder(board.getSquares(), wordHandler);
+            MoveFinder moveFinder = new MoveFinder(wordHandler);
             Generator generator = new Generator(moveFinder, validator, scorer, false,
-                    0, true, board);
+                    0, true);
             Word topRecommendation = null;
 
             //Main loop
             while (true) {
+
                 board.show('L');
 
                 // find out if the user would like to add a word or get a suggestion
@@ -61,7 +54,7 @@ public class Main {
                         int startCol = ui.getStartColFromUser();
                         int startRow = ui.getStartRowFromUser();
 
-                        int[] letterLocations = {0};
+                        int[] letterLocations;
 
                         try {
                             letterLocations = Utils.letterLocations(word, startCol, startRow, orientation);
@@ -95,7 +88,20 @@ public class Main {
 
                     topRecommendation = ui.displaySuggestionsToUser(possibleWords);
                 }
+
+                // undo last move
+                else if (action.equals("U")) {
+                    System.out.println("UNDO CALLED");
+                    board = board.getPreviousState();
+                }
             }
+        }
+
+        else {
+            int maxIterations = ui.getIterationCountFromUser();
+            SimulatedGame sim = new SimulatedGame(wordHandler, validator, scorer);
+            sim.simulateNGames(maxIterations);
+            System.out.println("\n\nSimulations Complete!");
         }
     }
 }

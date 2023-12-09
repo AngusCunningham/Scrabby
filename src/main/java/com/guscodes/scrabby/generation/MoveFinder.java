@@ -12,13 +12,14 @@ public class MoveFinder {
     private Square[] boardSquares;
     private Set<Word> wordsFound = new HashSet<>();
     private TrieNode rootNode;
-    public MoveFinder(Square[] boardSquares, WordHandler wordHandler) {
-        this.boardSquares = boardSquares;
+
+    public MoveFinder(WordHandler wordHandler) {
         rootNode = wordHandler.getTrieRoot();
     }
 
-    public Set<Word> getAllLegalMovesFrom(int startLocation, List<String> tray) {
+    public Set<Word> getAllMovesFrom(int startLocation, List<String> tray, Square[] boardSquares) {
         this.wordsFound.clear();
+        this.boardSquares = boardSquares;
         extendAfter(rootNode, startLocation, 'H', startLocation, tray, "");
         extendAfter(rootNode, startLocation, 'V', startLocation, tray, "");
         return this.wordsFound;

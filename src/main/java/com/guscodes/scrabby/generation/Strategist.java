@@ -30,7 +30,6 @@ In the end game
 
 public class Strategist {
     private Board board;
-    private Scorer scorer;
 
     //flags
     boolean efficientBlankUsage = false;
@@ -38,12 +37,9 @@ public class Strategist {
     boolean preferNoRepeatsInRack = false;
     boolean preferRETAINSRack = true;
 
-    public Strategist(Board board, Scorer scorer) {
-        this.board = board;
-        this.scorer = scorer;
-    }
 
-    public Set<Word> getStrategicRatings(Set<Word> words, String originalTray, double testParameter) {
+    public Set<Word> getStrategicRatings(Set<Word> words, String originalTray, Board board, double testParameter) {
+        this.board = board;
         boolean isEndGame = board.getPlayedLocations().size() > 85;
         //System.out.printf("Endgame: %b\n", isEndGame);
         for (Word word : words) {
