@@ -47,8 +47,8 @@ public class Validator {
 
         // check that the incidental words created with existing words are all real words
         String plainWord = inputWord.toUpperCase();
-        Word[] incidentalsCreated = getIncidentals(plainWord, locations, orientation, currentBoardSquares);
-        if (!(incidentalsAreLegit(incidentalsCreated))) {
+        Word[] incidentalsCreated = getAllIncidentals(plainWord, locations, orientation, currentBoardSquares);
+        if (!(incidentalsAreValid(incidentalsCreated))) {
             return null;
         }
 
@@ -95,7 +95,7 @@ public class Validator {
         return false;
     }
 
-    private boolean incidentalsAreLegit(Word[] allIncidentals) {
+    private boolean incidentalsAreValid(Word[] allIncidentals) {
         // for each occurring incidental word, check that it is a real word, and it is not using only played squares
         for (int index = 0; index < allIncidentals.length; index++) {
             Word incidental = allIncidentals[index];
@@ -139,7 +139,7 @@ public class Validator {
         return true;
     }
 
-    private Word[] getIncidentals(String word, int[] letterLocations, char orientation, Square[] boardSquares) {
+    private Word[] getAllIncidentals(String word, int[] letterLocations, char orientation, Square[] boardSquares) {
 
         //find in-line incidentals
         Word inlineIncidental = findInlineIncidental(word, letterLocations, orientation, boardSquares);
@@ -148,7 +148,7 @@ public class Validator {
 
         //find perpendicular incidentals
         char[] letters = word.toCharArray();
-        Word[] perpendicularIncidentals = findPerpIncs(letters, letterLocations, orientation, boardSquares);
+        Word[] perpendicularIncidentals = findPerpendicularIncidentals(letters, letterLocations, orientation, boardSquares);
 
         //return array containing all incidentals with core word at position 0
         Word[] allIncidentals = new Word[perpendicularIncidentals.length + 1];
@@ -181,7 +181,8 @@ public class Validator {
         return inlineIncidental;
     }
 
-    private Word[] findPerpIncs(char[] wordAsLetters, int[] letterLocations, char orientation, Square[] boardSquares) {
+    private Word[] findPerpendicularIncidentals(char[] wordAsLetters, int[] letterLocations,
+                                                char orientation, Square[] boardSquares) {
         int length = wordAsLetters.length;
         Word[] perpendicularIncidentals = new Word[length];
 

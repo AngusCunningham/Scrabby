@@ -14,15 +14,17 @@ public class Board {
     private List<Square> playedSquares = new ArrayList<>();
 
     private List<Board> states = new ArrayList<>();
+    boolean allowUndo;
 
     private Validator validator;
     private Scorer scorer;
     boolean verbose;
 
-    public Board(Validator validator, Scorer scorer, boolean verbose) {
+    public Board(Validator validator, Scorer scorer, boolean verbose, boolean allowUndo) {
         this.validator = validator;
         this.scorer = scorer;
         this.verbose = verbose;
+        this.allowUndo = allowUndo;
 
         for (int squareLocation = 0; squareLocation < 225; squareLocation++) {
             Square newSquare = new Square(squareLocation);
@@ -151,7 +153,7 @@ public class Board {
             throw new IllegalArgumentException("Suggested play is not valid");
         }
 
-        this.states.add(deepCopy());
+        if (allowUndo) this.states.add(deepCopy());
 
         Word mainWord = incidentalsFormed[0];
         char[] wordLetters = mainWord.getWord().toCharArray();
@@ -190,7 +192,7 @@ public class Board {
     }
 
     private Board deepCopy() {
-        Board boardDeepCopy = new Board(validator, scorer, verbose);
+        Board boardDeepCopy = new Board(validator, scorer, verbose, allowUndo);
 
         for (Square square : this.squares) {
             boardDeepCopy.squares[square.getLocation()].setContents(square.getContents());

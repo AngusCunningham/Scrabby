@@ -53,7 +53,7 @@ public class Trie {
             }
             else {
                 System.out.println("Search completed, no matching items found");
-                return new HashSet<String>();
+                return new HashSet<>();
             }
         }
         depthFirstSearch(currentTrieNode, prefix.substring(0, prefix.length() - 1));

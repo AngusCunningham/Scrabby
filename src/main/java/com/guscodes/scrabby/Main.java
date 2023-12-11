@@ -13,23 +13,23 @@ import java.util.*;
 
 public class Main {
     public static void main (String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        UserInterface ui = new UserInterface(scanner);
-        WordHandler wordHandler = new WordHandler();
-        Validator validator = new Validator(wordHandler.getAllWords());
-        Scorer scorer = new Scorer();
+        final Scanner scanner = new Scanner(System.in);
+        final UserInterface ui = new UserInterface(scanner);
+        final WordHandler wordHandler = new WordHandler();
+        final Validator validator = new Validator(wordHandler.getAllWords());
+        final Scorer scorer = new Scorer();
 
-        String welcomeString = "\nWelcome to Scrabby, your scrabble word finder\n";
+        final String welcomeString = "\nWelcome to Scrabby, your scrabble word finder\n";
         System.out.println(welcomeString);
 
         // check if suggesting mode or playing mode
         String mode = ui.getModeFromUser();
 
         if (! mode.equals("D")) {
-            Board board = new Board(validator, scorer, true);
+            Board board = new Board(validator, scorer, true, true);
 
-            MoveFinder moveFinder = new MoveFinder(wordHandler);
-            Generator generator = new Generator(moveFinder, validator, scorer, false,
+            final MoveFinder moveFinder = new MoveFinder(wordHandler);
+            final Generator generator = new Generator(moveFinder, validator, scorer, true,
                     0, true);
             Word topRecommendation = null;
 
@@ -93,6 +93,11 @@ public class Main {
                 else if (action.equals("U")) {
                     System.out.println("UNDO CALLED");
                     board = board.getPreviousState();
+                }
+
+                // game has been won by one of the players
+                else if (action.equals("W")) {
+                    break;
                 }
             }
         }

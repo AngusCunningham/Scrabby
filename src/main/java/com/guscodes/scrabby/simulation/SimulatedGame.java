@@ -11,9 +11,9 @@ import java.awt.Toolkit;
 import java.util.HashMap;
 
 public class SimulatedGame {
-    private WordHandler wordHandler;
-    private Validator validator;
-    private Scorer scorer;
+    private final WordHandler wordHandler;
+    private final Validator validator;
+    private final Scorer scorer;
 
     private int controlTotalScore;
     private int testTotalScore;
@@ -31,7 +31,7 @@ public class SimulatedGame {
 
     public void simulateNGames(int n) {
 
-        double[] testParameterValues = {0.05, 0.1, 0.15, 0.095, 0.25, 0.3};
+        double[] testParameterValues = {70, 80, 85, 50, 60, 90};
 
         HashMap<Double, Double> finalResults = new HashMap<>();
 
@@ -68,7 +68,7 @@ public class SimulatedGame {
                                                                                     testValue, testWinFraction);
         }
 
-        System.out.printf("\n\n");
+        System.out.println("\n");
         for (double testValue : testParameterValues) {
             System.out.printf("Value of %f produces a test win fraction of: %f \n",
                     testValue, finalResults.get(testValue));
@@ -78,7 +78,7 @@ public class SimulatedGame {
     }
 
     private void playOneRound(double testParameter) {
-        Board board = new Board(validator, scorer, false);
+        Board board = new Board(validator, scorer, false, false);
         TileBag tileBag = new TileBag();
         MoveFinder moveFinder = new MoveFinder(wordHandler);
 
@@ -134,15 +134,15 @@ public class SimulatedGame {
         //System.out.printf("Player 1 scored: %d\n", controlFinalScore);
         //System.out.printf("Player 2 scored: %d\n", testFinalScore);
 
-        //float player1Average = (float) controlTotalScore / iterationsPlayed;
-        //float player2Average = (float) testTotalScore / iterationsPlayed;
+        float player1Average = (float) controlTotalScore / iterationsPlayed;
+        float player2Average = (float) testTotalScore / iterationsPlayed;
         //float fractionGamesWonByPlayer1 = (float) gamesWonByControl / iterationsPlayed;
         float fractionGamesWonByTest = (float) gamesWonByTest / iterationsPlayed;
 
-        // System.out.println("\nBase Average Score: " + player1Average);
+        System.out.println("Control Average Score: " + player1Average);
         // System.out.println("Base Win Fraction: " + fractionGamesWonByPlayer1);
         // System.out.println();
-        // System.out.println("Test Average Score: " + player2Average);
+        System.out.println("Test Average Score: " + player2Average);
         System.out.println("Test Win Fraction: " + fractionGamesWonByTest);
         System.out.println();
         //System.out.println();

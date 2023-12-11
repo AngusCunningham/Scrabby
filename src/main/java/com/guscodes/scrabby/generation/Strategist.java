@@ -29,18 +29,25 @@ In the end game
  */
 
 public class Strategist {
+    /*todo: combine rateTrayRepetition() and rateRETAINSQuality() into a rateRemainingTray() function which takes into
+            account a) how common a letter is within the lexicon and b) how many of that letter remain in play
+            e.g. 'E' is a very useful letter, if there are already 11 out of the 12 'E' tiles placed on the board, having
+            an 'E' tile remain in the rack after playing a word is very beneficial. Otherwise, if there is only 1 out of
+            the 12 'E' tiles places on the board, it is less beneficial to keep an 'E' on the rack after playing a word,
+            however this is still more beneficial than keeping a Q on the rack.
+    */
     private Board board;
 
     //flags
-    boolean efficientBlankUsage = false;
-    boolean preferLowerRackScore = false;
-    boolean preferNoRepeatsInRack = false;
+    boolean efficientBlankUsage = true;
+    boolean preferLowerRackScore = true;
+    boolean preferNoRepeatsInRack = true;
     boolean preferRETAINSRack = true;
 
 
     public Set<Word> getStrategicRatings(Set<Word> words, String originalTray, Board board, double testParameter) {
         this.board = board;
-        boolean isEndGame = board.getPlayedLocations().size() > 85;
+        boolean isEndGame = board.getPlayedLocations().size() > testParameter;
         //System.out.printf("Endgame: %b\n", isEndGame);
         for (Word word : words) {
             //System.out.printf("%s old rating: %d\n", word.getWord(), word.getRating());
@@ -50,20 +57,20 @@ public class Strategist {
                 }
 
                 if (preferNoRepeatsInRack) {
-                    double modifier = (double) 1 / (1 + (rateTrayRepetition(word, originalTray)) * testParameter);
+                    double modifier = (double) 1 / (1 + (rateTrayRepetition(word, originalTray)) * 0.25);
                     //System.out.println(modifier);
                     word.modifyRatingByMultiplier(modifier);
                 }
 
                 if (preferRETAINSRack) {
-                    double modifier = 1 + ((rateRETAINSQuality(word, originalTray) * testParameter));
+                    double modifier = 1 + ((rateRETAINSQuality(word, originalTray) * 0.1));
                     word.modifyRatingByMultiplier(modifier);
                 }
             }
 
             if (isEndGame) {
                 if (preferLowerRackScore) {
-                    word.modifyRatingByMultiplier(1 + (rateRemainingTrayInEndgame(word) * testParameter));
+                    word.modifyRatingByMultiplier(1 + (rateRemainingTrayInEndgame(word) * 0.5));
                 }
             }
             //System.out.printf("%s new rating: %d\n", word.getWord(), word.getRating());
