@@ -14,9 +14,10 @@ import java.util.*;
 public class Main {
     public static void main (String[] args) {
         final Scanner scanner = new Scanner(System.in);
-        final UserInterface ui = new UserInterface(scanner);
         final WordHandler wordHandler = new WordHandler();
-        final Validator validator = new Validator(wordHandler.getAllWords());
+        final UserInterface ui = new UserInterface(scanner, wordHandler);
+        wordHandler.buildDefinedDictionary("CSW19DEF.txt");
+        final Validator validator = new Validator(wordHandler.getDefinedDictionary().keySet());
         final Scorer scorer = new Scorer();
 
         final String welcomeString = "\nWelcome to Scrabby, your scrabble word finder\n";

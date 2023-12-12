@@ -56,5 +56,4 @@ public class Data {
     public static final Map<Character, Integer> LETTER_SCORES = new HashMap<>(TILE_POINTS);
 
 
-
 }

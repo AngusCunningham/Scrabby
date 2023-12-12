@@ -4,20 +4,11 @@ import java.io.InputStream;
 import java.util.*;
 
 public class WordHandler {
-    private Set<String> dictionary = buildDictionary();
-    private Trie dictTrie = new Trie(dictionary);
+    private Map<String, String> definedDictionary = new HashMap<>();
+    private Trie dictTrie;
 
-    public Set<String> getAllWords() {
-        return this.dictionary;
-    }
-    public Set<String> searchTrie(String prefix) {
-        return dictTrie.search(prefix);
-    }
-
-    private Set<String> buildDictionary() {
-        Set<String> scrabbleWords = new HashSet<>();
-
-        InputStream inputStream = getClass().getResourceAsStream("Dict.txt");
+    public void buildDefinedDictionary(String dictionaryTextFilePath) {
+        InputStream inputStream = getClass().getResourceAsStream(dictionaryTextFilePath);
         Scanner scanner = new Scanner(inputStream);
 
         //read line by line
@@ -26,14 +17,33 @@ public class WordHandler {
             while (scanner.hasNextLine()) {
                 line = scanner.nextLine();
 
+                int locationOfFirstWhitespace = 0;
+                for (int index = 0; index < line.length(); index++) {
+                    if (Character.isWhitespace(line.charAt(index))) {
+                        locationOfFirstWhitespace = index;
+                        break;
+                    }
+                }
+
+                String word = line.substring(0, locationOfFirstWhitespace).stripTrailing().toUpperCase();
+                String definition = line.substring(locationOfFirstWhitespace).stripLeading();
+
+                //System.out.printf("Word: %s: %s\n", word, definition);
+
                 // since one-letter words are of no use in scrabble, only add words longer than one letter
-                if (line.length() > 1) {
-                    scrabbleWords.add(line);
+                if (word.length() > 1) {
+                    definedDictionary.put(word, definition);
                 }
             }
         }
-        System.out.printf("%d words read into scrabble dictionary\n", scrabbleWords.size());
-        return scrabbleWords;
+
+        dictTrie = new Trie(definedDictionary.keySet());
+
+        System.out.printf("%d words and their definitions read into the dictionary\n", definedDictionary.size());
+    }
+
+    public Map<String, String> getDefinedDictionary() {
+        return this.definedDictionary;
     }
 
     public HashMap<Character, Float> letterFrequencyInDictionary(Collection<String> dictionary) {
