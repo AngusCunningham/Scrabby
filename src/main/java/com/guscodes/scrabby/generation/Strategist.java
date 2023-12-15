@@ -1,7 +1,6 @@
 package com.guscodes.scrabby.generation;
 
 import com.guscodes.scrabby.Data;
-import com.guscodes.scrabby.analysis.Scorer;
 import com.guscodes.scrabby.gameitems.Word;
 import com.guscodes.scrabby.gameitems.Board;
 
@@ -21,7 +20,7 @@ Before the end game
 
 - Prefer to play words which take bonus squares from opponent or block the use of bonus squares
 - Prefer to play words which open up fewer bonus squares for opponent to use
-- Prefer not to play words which can be easily extended with s, ed, er etc right before a triple word
+- Prefer not to play words which can be easily extended with s, ed, er etc. right before a triple word
 
 In the end game
 - Prefer to play words which use higher scoring letters from the rack - COMPLETE - OPTIMAL MULTIPLIER IS THE REMAINING TILE SCORE SUM
@@ -47,7 +46,7 @@ public class Strategist {
 
     public Set<Word> getStrategicRatings(Set<Word> words, String originalTray, Board board, double testParameter) {
         this.board = board;
-        boolean isEndGame = board.getPlayedLocations().size() > 85;
+        boolean isEndGame = board.getPlayedLocations().size() > testParameter;
         //System.out.printf("Endgame: %b\n", isEndGame);
         for (Word word : words) {
             //System.out.printf("%s old rating: %d\n", word.getWord(), word.getRating());
@@ -107,7 +106,7 @@ public class Strategist {
 
         Map<Character, Integer> remainingQuantities = new HashMap<>();
         for (char tile : remainingTray.toCharArray()) {
-            if (remainingQuantities.keySet().contains(tile)) {
+            if (remainingQuantities.containsKey(tile)) {
                 int newQuantity = remainingQuantities.get(tile) + 1;
                 remainingQuantities.put(tile, newQuantity);
             }
@@ -131,7 +130,8 @@ public class Strategist {
 
         int trayRating = Data.MAX_TRAY_SIZE;
         for (char letter : remainingTray.toCharArray()) {
-            if (! Arrays.asList( "RETAINS~".split("")).contains(letter)) {
+            //todo: fix this daftness
+            if (! Arrays.asList( "RETAINS~".split("")).contains(letter))  {
                 trayRating -= 1;
             }
         }

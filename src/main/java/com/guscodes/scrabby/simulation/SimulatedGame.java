@@ -33,7 +33,7 @@ public class SimulatedGame {
 
     public void simulateNGames(int n) {
 
-        double[] testParameterValues = {70, 80, 85, 50, 60, 90};
+        double[] testParameterValues = {95, 97, 100, 80, 82, 85, 87, 90, 92};
 
         Map<Double, Double> finalResults = new HashMap<>();
         Map<Double, Double> finalTimes = new HashMap<>();
