@@ -40,10 +40,7 @@ public class Generator {
         Set<Word> suggestedWords = new HashSet<>();
         Set<String> allTrays = trayVersions(tray);
         for (String trayVersion : allTrays) {
-            List<String> trayLetters = new ArrayList<>();
-            for (String letter : trayVersion.split("")) {
-                trayLetters.add(letter);
-            }
+            List<String> trayLetters = Arrays.asList(trayVersion.split(""));
 
             for (int location = 0; location < 225; location++) {
                 suggestedWords.addAll(moveFinder.getAllMovesFrom(location, trayLetters, board.getSquares()));
@@ -113,15 +110,15 @@ public class Generator {
 
     private Set<Word> filterValidateAndScore(Set<Word> potentialWords) {
         Set<Word> checkedWords = new HashSet<>();
-        for (Word word : potentialWords) {
-            Word[] checked = validator.validate(word, board);
-            if (checked == null) {
-                // word is invalid
+        for (Word potentialWord : potentialWords) {
+            Word[] validatedIncidentals = validator.validate(potentialWord, board);
+            if (validatedIncidentals == null) {
+                // potentialWord is invalid
                 continue;
             }
-            Word checkedWord = checked[0];
-            checkedWord.setOrientation(word.getOrientation());
-            checkedWord.setScore(scorer.getTotalScore(checked, board));
+            Word checkedWord = validatedIncidentals[0];
+            checkedWord.setOrientation(potentialWord.getOrientation());
+            checkedWord.setScore(scorer.getTotalScore(validatedIncidentals, board));
             checkedWords.add(checkedWord);
         }
         return checkedWords;

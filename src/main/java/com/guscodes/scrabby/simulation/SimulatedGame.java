@@ -1,4 +1,5 @@
 package com.guscodes.scrabby.simulation;
+
 import com.guscodes.scrabby.analysis.Validator;
 import com.guscodes.scrabby.analysis.Scorer;
 import com.guscodes.scrabby.gameitems.Board;
@@ -7,8 +8,8 @@ import com.guscodes.scrabby.generation.Generator;
 import com.guscodes.scrabby.generation.MoveFinder;
 import com.guscodes.scrabby.lexicon.WordHandler;
 
-import java.awt.Toolkit;
 import java.util.HashMap;
+import java.util.Map;
 
 public class SimulatedGame {
     private final WordHandler wordHandler;
@@ -22,6 +23,7 @@ public class SimulatedGame {
 
     private int totalIterations;
     private int iterationsPlayed;
+    private long nanoTimeTotal;
 
     public SimulatedGame(WordHandler wordHandler, Validator validator, Scorer scorer) {
         this.wordHandler = wordHandler;
@@ -33,7 +35,8 @@ public class SimulatedGame {
 
         double[] testParameterValues = {70, 80, 85, 50, 60, 90};
 
-        HashMap<Double, Double> finalResults = new HashMap<>();
+        Map<Double, Double> finalResults = new HashMap<>();
+        Map<Double, Double> finalTimes = new HashMap<>();
 
         for (double testValue : testParameterValues) {
             finalResults.put(testValue, 0.0);
@@ -52,6 +55,7 @@ public class SimulatedGame {
 
             totalIterations = n;
             iterationsPlayed = 0;
+            nanoTimeTotal = 0;
 
             valuesExamined += 1;
 
@@ -63,7 +67,9 @@ public class SimulatedGame {
             }
 
             double testWinFraction = (double) gamesWonByTest / iterationsPlayed;
+            double averageTimePerGame = (double) (nanoTimeTotal / iterationsPlayed) / 1000000000;
             finalResults.put(testValue, testWinFraction);
+            finalTimes.put(testValue, averageTimePerGame);
             System.out.printf("Using a multiplier of %f, testPlayer won %f of the games played\n\n",
                                                                                     testValue, testWinFraction);
         }
@@ -72,9 +78,8 @@ public class SimulatedGame {
         for (double testValue : testParameterValues) {
             System.out.printf("Value of %f produces a test win fraction of: %f \n",
                     testValue, finalResults.get(testValue));
+            System.out.printf("Average game time is %d seconds\n", finalTimes.get(testValue));
         }
-
-        Toolkit.getDefaultToolkit().beep();
     }
 
     private void playOneRound(double testParameter) {
@@ -91,8 +96,8 @@ public class SimulatedGame {
         VirtualPlayer[] players = {controlPlayer, testPlayer};
 
         boolean playingOn = true;
-
         System.out.printf("Beginning game %d out of %d\n", iterationsPlayed + 1, totalIterations);
+        long startTime = System.nanoTime();
         while (playingOn) {
             for (VirtualPlayer player : players) {
                 player.takeTurn();
@@ -112,6 +117,8 @@ public class SimulatedGame {
                 }
             }
         }
+        long endTime = System.nanoTime();
+        nanoTimeTotal += endTime - startTime;
 
         iterationsPlayed += 1;
 
@@ -133,7 +140,7 @@ public class SimulatedGame {
         //System.out.printf("Game %d of %d completed\n\n", iterationsPlayed, totalIterations);
         //System.out.printf("Player 1 scored: %d\n", controlFinalScore);
         //System.out.printf("Player 2 scored: %d\n", testFinalScore);
-
+        double averageSecondsPerGame = (double) (nanoTimeTotal / iterationsPlayed) / 1000000000;
         float player1Average = (float) controlTotalScore / iterationsPlayed;
         float player2Average = (float) testTotalScore / iterationsPlayed;
         //float fractionGamesWonByPlayer1 = (float) gamesWonByControl / iterationsPlayed;
@@ -144,6 +151,7 @@ public class SimulatedGame {
         // System.out.println();
         System.out.println("Test Average Score: " + player2Average);
         System.out.println("Test Win Fraction: " + fractionGamesWonByTest);
+        System.out.println("Average time per game: " + averageSecondsPerGame + " seconds");
         System.out.println();
         //System.out.println();
 
