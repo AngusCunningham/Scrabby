@@ -63,7 +63,14 @@ public class Main {
                                 Word wordToAdd = new Word(word, letterLocations, orientation);
                                 board.addWord(wordToAdd);
                             } catch (IllegalArgumentException e) {
-                                System.out.println("That play was not valid, please make a new choice\n");
+                                String invalidWordAction = ui.getInvalidWordDecisionFromUser();
+                                if (invalidWordAction.equals("A")) {
+                                    Set<String> userWords = ui.getUserWordsToAdd();
+                                    for (String userWord : userWords) {
+                                        wordHandler.addUserWord(userWord);
+                                    }
+                                    System.out.println("Try your play again...");
+                                }
                             }
                         }
                         catch (IndexOutOfBoundsException e) {

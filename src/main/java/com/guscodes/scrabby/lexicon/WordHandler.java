@@ -7,6 +7,10 @@ public class WordHandler {
     private Map<String, String> definedDictionary = new HashMap<>();
     private Trie dictTrie;
 
+    public void addUserWord(String word) {
+        definedDictionary.put(word, "USER ADDED WORD");
+    }
+
     public void buildDefinedDictionary(String dictionaryTextFilePath) {
         InputStream inputStream = getClass().getResourceAsStream(dictionaryTextFilePath);
         Scanner scanner = new Scanner(inputStream);
