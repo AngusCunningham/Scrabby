@@ -7,26 +7,24 @@ import java.util.*;
 public class Utils {
 
     //board navigation static functions
-    public static int locationAbove(int location) throws IndexOutOfBoundsException {
+    public static int locationAbove(int location) {
         if (location > 14) return location - 15;
-        throw new IndexOutOfBoundsException("No square above this one as it is at the top of the board");
+        return -1;
     }
 
-    public static int locationBelow(int location) throws IndexOutOfBoundsException {
+    public static int locationBelow(int location) {
         if (location + 15 < 225) return location + 15;
-        throw new IndexOutOfBoundsException("No square below this one as it is at the bottom of the board");
+        return -1;
     }
 
-    public static int locationToRight(int location) throws IndexOutOfBoundsException {
+    public static int locationToRight(int location) {
         if ((location + 1) % 15 != 0) return location + 1;
-        else {
-            throw new IndexOutOfBoundsException("No square right of this one as it is at the right of the board");
-        }
+        return -1;
     }
 
-    public static int locationToLeft(int location) throws IndexOutOfBoundsException {
+    public static int locationToLeft(int location) {
         if (location % 15 != 0) return location - 1;
-        throw new IndexOutOfBoundsException("No square left of this one as it is at the left of the board");
+        return -1;
     }
 
     public static int toBoardLocation(int col, int row) {
@@ -48,44 +46,24 @@ public class Utils {
         return new int[] {col, row};
     }
 
-    public static int nextLocation(int location, char orientation) throws IndexOutOfBoundsException,
-            IllegalArgumentException {
+    public static int nextLocation(int location, char orientation) throws IllegalArgumentException {
         if (orientation == 'H') {
-            try {
-                return locationToRight(location);
-            }
-            catch (IndexOutOfBoundsException e) {
-                throw new IndexOutOfBoundsException("Next square horizontally would be off the board");
-            }
+            return locationToRight(location);
         }
         if (orientation == 'V') {
-            try{
-                return locationBelow(location);
-            }
-            catch (IndexOutOfBoundsException e) {
-                throw new IndexOutOfBoundsException("Next square vertically would be off the board");
-            }
+            return locationBelow(location);
         }
         else {
             throw new IllegalArgumentException("Orientation must be either 'V' or 'H'");
         }
     }
 
-    public static int lastLocation(int location, char orientation) throws IndexOutOfBoundsException,
-            IllegalArgumentException {
+    public static int lastLocation(int location, char orientation) throws IllegalArgumentException {
         if (orientation == 'H') {
-            try {
-                return locationToLeft(location);
-            } catch (IndexOutOfBoundsException e) {
-                throw new IndexOutOfBoundsException("Last square horizontally would be off the board");
-            }
+            return locationToLeft(location);
         }
         if (orientation == 'V') {
-            try {
-                return locationAbove(location);
-            } catch (IndexOutOfBoundsException e) {
-                throw new IndexOutOfBoundsException("Last square vertically would be off the board");
-            }
+            return locationAbove(location);
         } else {
             throw new IllegalArgumentException("Orientation must be either 'V' or 'H'");
         }

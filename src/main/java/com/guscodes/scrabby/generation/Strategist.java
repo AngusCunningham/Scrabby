@@ -47,7 +47,7 @@ public class Strategist {
 
     public Set<Word> getStrategicRatings(Set<Word> words, String originalTray, Board board, double testParameter) {
         this.board = board;
-        boolean isEndGame = board.getPlayedLocations().size() > testParameter;
+        boolean isEndGame = board.getPlayedLocations().size() > 85;
         //System.out.printf("Endgame: %b\n", isEndGame);
         for (Word word : words) {
             //System.out.printf("%s old rating: %d\n", word.getWord(), word.getRating());

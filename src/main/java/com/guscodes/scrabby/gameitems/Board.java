@@ -148,7 +148,7 @@ public class Board {
     }
 
     public void addWord(Word word) throws IllegalArgumentException {
-        Word[] incidentalsFormed = validator.getIncidentals(word, this);
+        Word[] incidentalsFormed = validator.validate(word, this);
         if (incidentalsFormed == null) {
             throw new IllegalArgumentException("Suggested play is not valid");
         }

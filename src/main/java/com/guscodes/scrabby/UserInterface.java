@@ -187,8 +187,13 @@ public class UserInterface {
     }
 
     Set<String> getUserWordsToAdd() {
-        System.out.println("Type the words you would like to add to the dictionary, separated with spaces");
+        Set<String> userWords = new HashSet<>();
+        System.out.println("Type the words you would like to add to the dictionary, separated by spaces");
         String words = scanner.nextLine().toUpperCase();
-        return new HashSet<>(Arrays.asList(words.split(" ")));
+        String[] separatedWords = words.split(" ");
+        for (String sepWord : separatedWords) {
+            userWords.add(sepWord.strip());
+        }
+        return userWords;
     }
 }

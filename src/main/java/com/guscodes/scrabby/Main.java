@@ -17,7 +17,7 @@ public class Main {
         final WordHandler wordHandler = new WordHandler();
         final UserInterface ui = new UserInterface(scanner, wordHandler);
         wordHandler.buildDefinedDictionary("CSW19DEF.txt");
-        final Validator validator = new Validator(wordHandler.getDefinedDictionary().keySet());
+        final Validator validator = new Validator(wordHandler);
         final Scorer scorer = new Scorer();
 
         final String welcomeString = "\nWelcome to Scrabby, your scrabble word finder\n";

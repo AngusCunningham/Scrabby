@@ -114,7 +114,7 @@ public class Generator {
     private Set<Word> filterValidateAndScore(Set<Word> potentialWords) {
         Set<Word> checkedWords = new HashSet<>();
         for (Word word : potentialWords) {
-            Word[] checked = validator.getIncidentals(word, board);
+            Word[] checked = validator.validate(word, board);
             if (checked == null) {
                 // word is invalid
                 continue;

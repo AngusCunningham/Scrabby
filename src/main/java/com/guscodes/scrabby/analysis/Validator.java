@@ -4,17 +4,18 @@ import com.guscodes.scrabby.gameitems.Square;
 import com.guscodes.scrabby.Utils;
 import com.guscodes.scrabby.gameitems.Word;
 import com.guscodes.scrabby.gameitems.Board;
+import com.guscodes.scrabby.lexicon.WordHandler;
 
 import java.util.*;
 
 public class Validator {
     private Board board;
-    private Set<String> dictionary;
-    public Validator(Set<String> dictionary) {
-        this.dictionary = dictionary;
+    private final Set<String> dictionary;
+    public Validator(WordHandler wordHandler) {
+        this.dictionary = wordHandler.getDefinedDictionary().keySet();
     }
 
-    public Word[] getIncidentals(Word word, Board board) {
+    public Word[] validate(Word word, Board board) {
         /*
         Returns the incidentals which would be created if the word was played to the board
         The first incidental will be the word itself, extended if it made any inline incidentals
@@ -23,7 +24,7 @@ public class Validator {
 
         this.board = board;
 
-        if (word == null || word.getWord() == null || word.getWord() == "" || word.getLocations() == null) {
+        if (word == null || word.getWord() == null || word.getWord().equals("") || word.getLocations() == null) {
             return null;
         }
 
@@ -154,8 +155,8 @@ public class Validator {
         Word[] allIncidentals = new Word[perpendicularIncidentals.length + 1];
         allIncidentals[0] = inlineIncidental;
         for (int index = 1; index < allIncidentals.length; index++) {
-            Word perpInc = perpendicularIncidentals[index-1];
-            allIncidentals[index] = perpInc;
+            Word perpendicularIncidental = perpendicularIncidentals[index-1];
+            allIncidentals[index] = perpendicularIncidental;
         }
         return allIncidentals;
     }
@@ -202,7 +203,7 @@ public class Validator {
                 int newStart = letterLocations[index];
                 if (prefix.length() > 0) {
                     char[] prefixChars = prefix.toCharArray();
-                    for (char letter : prefixChars) {
+                    for (char ignored : prefixChars) {
                         newStart = Utils.lastLocation(newStart, perpendicularOrientation);
                     }
                 }
@@ -226,20 +227,19 @@ public class Validator {
         String prefix = "";
         int currentLocation = location;
         while (true) {
-            try {
-                currentLocation = Utils.lastLocation(currentLocation, incidentalDirection);
-                char contents = boardSquares[currentLocation].getContents();
+            currentLocation = Utils.lastLocation(currentLocation, incidentalDirection);
+            if (currentLocation == -1) {
+                // edge of board exceeded
+                break;
+            }
 
-                if (contents != '_'){
-                    prefix = contents + prefix;
-                }
-                else {
-                    //square found is blank
-                    break;
-                }
+            char contents = boardSquares[currentLocation].getContents();
 
-            } catch (IndexOutOfBoundsException e) {
-                //edge of board reached
+            if (contents != '_'){
+                prefix = contents + prefix;
+            }
+            else {
+                // square found is blank
                 break;
             }
         }
@@ -251,20 +251,19 @@ public class Validator {
         String suffix = "";
         int currentLocation = location;
         while (true) {
-            try {
-                currentLocation = Utils.nextLocation(currentLocation, incidentalDirection);
-                char contents = boardSquares[currentLocation].getContents();
+            currentLocation = Utils.nextLocation(currentLocation, incidentalDirection);
+            if (currentLocation == -1) {
+                //edge of board exceeded
+                break;
+            }
 
-                if (contents != '_'){
-                    suffix += contents;
-                }
-                else {
-                    //next square is blank
-                    break;
-                }
+            char contents = boardSquares[currentLocation].getContents();
 
-            } catch (IndexOutOfBoundsException e) {
-                //edge of board reached
+            if (contents != '_'){
+                suffix += contents;
+            }
+            else {
+                // next square is blank
                 break;
             }
         }

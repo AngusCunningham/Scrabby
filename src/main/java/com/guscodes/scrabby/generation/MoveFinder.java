@@ -10,8 +10,8 @@ import java.util.*;
 
 public class MoveFinder {
     private Square[] boardSquares;
-    private Set<Word> wordsFound = new HashSet<>();
-    private TrieNode rootNode;
+    private final Set<Word> wordsFound = new HashSet<>();
+    private final TrieNode rootNode;
 
     public MoveFinder(WordHandler wordHandler) {
         rootNode = wordHandler.getTrieRoot();
@@ -30,7 +30,9 @@ public class MoveFinder {
 
         Square startSquare = boardSquares[location];
         String contents = String.valueOf(startSquare.getContents());
-        HashMap<String, TrieNode> nextLetters = node.getChildren();
+        HashMap<String, TrieNode> nextNodes = node.getChildren();
+        Set<String> nextLetters = nextNodes.keySet();
+
 
         // if square is empty
         if ("_".equals(contents)) {
@@ -43,22 +45,27 @@ public class MoveFinder {
 
             // see if any words can continue from the square trying each of the remaining tray letters
             for (String letter : tray) {
-                if (nextLetters.keySet().contains(letter.toUpperCase())) {
-                    TrieNode newNode = nextLetters.get(letter.toUpperCase());
+                if (nextLetters.contains(letter.toUpperCase())) {
+                    TrieNode newNode = nextNodes.get(letter.toUpperCase());
                     List<String> newTray = new ArrayList<>(tray);
                     newTray.remove(letter);
                     String newWord = partialWord + letter;
+
                     try {
                         int nextLocation = Utils.nextLocation(location, orientation);
-                        extendAfter(newNode, nextLocation, orientation, originalStart, newTray, newWord);
-                    }
-                    catch (IndexOutOfBoundsException e) {
-                        // next square would be the edge of the board so the word must end here
-                        if (newNode.isTerminal()) {
-                            Word newWordFound = new Word(newWord, originalStart, orientation);
-                            wordsFound.add(newWordFound);
+                        if (nextLocation == -1) {
+                            // next square would be the edge of the board so the word must end here
+                            if (newNode.isTerminal()) {
+                                Word newWordFound = new Word(newWord, originalStart, orientation);
+                                wordsFound.add(newWordFound);
+                            }
+                        }
+
+                        else {
+                            extendAfter(newNode, nextLocation, orientation, originalStart, newTray, newWord);
                         }
                     }
+
                     catch (IllegalArgumentException e) {
                         System.out.println("Orientation used in MoveFinder must only be 'H' or 'V'");
                     }
@@ -67,19 +74,23 @@ public class MoveFinder {
         }
 
         // if square has already been played, check if the tile in it can add to the word at all
-        else if (nextLetters.keySet().contains(contents.toUpperCase())) {
-            TrieNode newNode = nextLetters.get(contents.toUpperCase());
+        else if (nextLetters.contains(contents.toUpperCase())) {
+            TrieNode newNode = nextNodes.get(contents.toUpperCase());
             String newWord = partialWord + contents;
             try {
                 int nextLocation = Utils.nextLocation(location, orientation);
-                extendAfter(newNode, nextLocation, orientation, originalStart, tray, newWord);
-            }
-            catch (IndexOutOfBoundsException e) {
-                if (newNode.isTerminal()) {
-                    Word newWordFound = new Word(newWord, originalStart, orientation);
-                    wordsFound.add(newWordFound);
+                if (nextLocation == -1) {
+                    // edge of board is reached, word must end here
+                    if (newNode.isTerminal()) {
+                        Word newWordFound = new Word(newWord, originalStart, orientation);
+                        wordsFound.add(newWordFound);
+                    }
+                }
+                else {
+                    extendAfter(newNode, nextLocation, orientation, originalStart, tray, newWord);
                 }
             }
+
             catch (IllegalArgumentException e) {
                 System.out.println("Orientation used in MoveFinder must only be 'H' or 'V'");
             }
