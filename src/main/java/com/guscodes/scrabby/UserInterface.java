@@ -180,7 +180,7 @@ public class UserInterface {
         System.out.println("That play was not valid");
         System.out.println("Make a (N)ew choice or (A)dd your own words to the dictionary");
         while (true) {
-            result = scanner.nextLine();
+            result = scanner.nextLine().toUpperCase();
             if (result.equals("A") || result.equals("N")) return result;
             else System.out.println("Please only enter 'A' or 'N'");
         }

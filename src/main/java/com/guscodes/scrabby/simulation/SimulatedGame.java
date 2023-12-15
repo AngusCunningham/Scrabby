@@ -129,7 +129,7 @@ public class SimulatedGame {
         }
 
 
-        // board.show('L');
+        board.show('L');
         //System.out.printf("Game %d of %d completed\n\n", iterationsPlayed, totalIterations);
         //System.out.printf("Player 1 scored: %d\n", controlFinalScore);
         //System.out.printf("Player 2 scored: %d\n", testFinalScore);
