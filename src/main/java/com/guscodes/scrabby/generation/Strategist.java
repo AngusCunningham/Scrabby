@@ -38,12 +38,11 @@ public class Strategist {
     */
     private Board board;
     private final WordHandler wordHandler;
-    private final Map<Character, Integer> frequencyTable;
+    private final Map<Character, Double> frequencyTable;
     //flags
     boolean efficientBlankUsage = false;
     boolean preferLowerRackScore = false;
-    boolean preferNoRepeatsInRack = false;
-    boolean preferRETAINSRack = true;
+    boolean useTrayLeaveRating = true;
 
     public Strategist(WordHandler wordHandler) {
         this.wordHandler = wordHandler;
@@ -54,22 +53,17 @@ public class Strategist {
         boolean isEndGame = board.getPlayedLocations().size() > 82;
         //System.out.printf("Endgame: %b\n", isEndGame);
         for (Word word : words) {
-            //System.out.printf("%s old rating: %d\n", word.getWord(), word.getRating());
+
+            // System.out.printf("%s old rating: %d\n", word.getWord(), word.getRating());
             if (! isEndGame) {
                 if (efficientBlankUsage) {
                     word.modifyRatingByMultiplier(rateBlankUsage(word));
                 }
 
-                if (preferNoRepeatsInRack) {
-                    double modifier = (double) 1 / (1 + (rateTrayRepetition(word, originalTray)) * 0.25);
-                    //System.out.println(modifier);
-                    word.modifyRatingByMultiplier(modifier);
-                }
-
-                if (preferRETAINSRack) {
-                    double modifier = 1 + ((rateRETAINSQuality(word, originalTray) * testParameter));
-                    //System.out.printf("RETAINS~ modifier for %s is %f\n", word.getWord(), modifier);
-                    word.modifyRatingByMultiplier(modifier);
+                if (useTrayLeaveRating) {
+                    double modifier = rateTrayLeave(originalTray, word.getTrayLettersUsed());
+                    // System.out.println("Tray leave rated: " + modifier);
+                    word.modifyRatingByMultiplier(1 + (modifier * testParameter));
                 }
             }
 
@@ -78,7 +72,7 @@ public class Strategist {
                     word.modifyRatingByMultiplier(1 + (rateRemainingTrayInEndgame(word) * 0.5));
                 }
             }
-            //System.out.printf("%s new rating: %d\n", word.getWord(), word.getRating());
+            // System.out.printf("%s new rating: %d\n", word.getWord(), word.getRating());
         }
 
         return words;
@@ -104,80 +98,40 @@ public class Strategist {
         return fromTrayTotalPoints;
     }
 
-    private int rateTrayRepetition(Word word, String originalTray) {
-        String remainingTray = getTrayLeave(originalTray, word.getTrayLettersUsed());
-        if (remainingTray.length() == 0) {
-            return 0;
-        }
-
-        Map<Character, Integer> remainingQuantities = new HashMap<>();
-        for (char tile : remainingTray.toCharArray()) {
-            if (remainingQuantities.containsKey(tile)) {
-                int newQuantity = remainingQuantities.get(tile) + 1;
-                remainingQuantities.put(tile, newQuantity);
-            }
-            else {
-                remainingQuantities.put(tile, 1);
-            }
-        }
-
-        int repetitionScore = 0;
-        for (char tile : remainingQuantities.keySet()) {
-            if (remainingQuantities.get(tile) > 1) {
-                repetitionScore += remainingQuantities.get(tile) - 1;
-            }
-        }
-
-        return repetitionScore;
-    }
-
-    private int rateRETAINSQuality(Word word, String originalTray) {
-        String remainingTray = getTrayLeave(originalTray, word.getTrayLettersUsed());
-
-        int trayRating =
-        for (char letter : remainingTray.toCharArray()) {
-            if (letter == '~') {
-                trayRating += 2;
-            }
-        }
-
-        //System.out.printf("After playing %s, %s remains in tray, tray rated %d\n", word.getWord(), remainingTray, trayRating);
-        return trayRating;
-    }
-
-    private double rateTrayLeave(String originalTray, List<String> usedTiles, Map<String, Double> tileRatings) {
+    private double rateTrayLeave(String originalTray, List<String> usedTiles) {
         Map<Character, Integer> unseenTiles = board.getUnseenTiles();
         for (String tile : usedTiles) {
             char tileChar = tile.charAt(0);
             unseenTiles.put(tileChar, unseenTiles.get(tileChar) - 1);
         }
 
-        int unseenTileTotalValue = 0;
+        double unseenTileTotalValue = 0;
         int totalTilesRemaining = 0;
         for (char tile : unseenTiles.keySet()) {
             int quantityOfTileUnseen = unseenTiles.get(tile);
-            unseenTileTotalValue += quantityOfTileUnseen * frequencyTable.get(tile);
             totalTilesRemaining += quantityOfTileUnseen;
+            unseenTileTotalValue += frequencyTable.get(tile);
         }
 
-        double averageUnseenTileValue = (double) unseenTileTotalValue / totalTilesRemaining;
+        double averageUnseenTileValue = unseenTileTotalValue / totalTilesRemaining;
+        // System.out.printf("%d tiles are still to be seen, average value: %f\n", totalTilesRemaining, averageUnseenTileValue);
 
         int newTileSlotsInTray = Data.MAX_TRAY_SIZE - usedTiles.size();
 
         double trayRating = newTileSlotsInTray * averageUnseenTileValue;
+        // System.out.println("Tray base rating is: " + trayRating);
+        String remainingTray = getTrayLeave(originalTray, usedTiles);
 
-        if (! (usedTiles.size() == Data.EMPTY_RACK_BONUS)) {
-
-            String remainingTray = getTrayLeave(originalTray, usedTiles);
+        if (remainingTray.length() > 0) {
             List<String> remainingTiles = Arrays.asList(remainingTray.strip().split(""));
-
-            List<String> tilesInTray = new ArrayList<>();
+            Set<String> tilesInTray = new HashSet<>();
             for (String tile : remainingTiles) {
-                if (! (tilesInTray.contains(tile))) {
+                if (! tilesInTray.contains(tile)) {
                     trayRating += frequencyTable.get(tile.charAt(0));
+                    tilesInTray.add(tile);
                 }
-                tilesInTray.add(tile);
             }
+
         }
         return trayRating;
     }

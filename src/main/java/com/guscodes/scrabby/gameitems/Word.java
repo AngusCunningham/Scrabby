@@ -105,7 +105,16 @@ public class Word implements Comparable {
     }
 
     public List<String> getTrayLettersUsed() {
-        return lettersUsedFromTray;
+        String trayLettersUsed = "";
+        for (String letter : lettersUsedFromTray) {
+            if (Character.isLowerCase(letter.charAt(0))) {
+                trayLettersUsed += '~';
+            }
+            else {
+                trayLettersUsed += letter;
+            }
+        }
+        return Arrays.asList(trayLettersUsed.split(""));
     }
 
     @Override

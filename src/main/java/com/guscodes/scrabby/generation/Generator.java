@@ -13,18 +13,18 @@ public class Generator {
     private Validator validator;
     private Scorer scorer;
     private MoveFinder moveFinder;
-    boolean useExperimentalFeatures;
+    boolean useStrategicRating;
     private float testParameter;
     boolean verbose;
     Board board;
     Strategist strategist;
 
     public Generator(MoveFinder moveFinder, Validator validator, Scorer scorer,
-                     boolean useExperimentalFeatures, double testParameter, boolean verbose,
+                     boolean useStrategicRating, double testParameter, boolean verbose,
                      WordHandler wordHandler) {
         this.validator = validator;
         this.scorer = scorer;
-        this.useExperimentalFeatures = useExperimentalFeatures;
+        this.useStrategicRating = useStrategicRating;
         this.testParameter = (float) testParameter;
         this.moveFinder = moveFinder;
         this.verbose = verbose;
@@ -53,7 +53,7 @@ public class Generator {
 
         // experimental strategy
         //System.out.println("Experimental features: " + useExperimentalFeatures);
-        if (useExperimentalFeatures) {
+        if (useStrategicRating) {
             //System.out.println("Using experimental features");
             scoredAndValidatedSuggestions = strategist.getStrategicRatings(scoredAndValidatedSuggestions, tray, board, testParameter);
         }

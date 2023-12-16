@@ -173,16 +173,23 @@ public class Board {
             //add letters to board squares
             char tileChar = wordLetters[index];
             squares[letterLocations[index]].setContents(tileChar);
-
-            // update unseen tile quantities
-            char tile;
-            if (Character.isLowerCase(tileChar)) tile = '~';
-            else tile = tileChar;
-
-            unseenTiles.put(tile, unseenTiles.get(tile) - 1);
         }
 
         int score = scorer.getTotalScore(incidentalsFormed, this);
+
+        List<String> newLettersAddedToBoard = incidentalsFormed[0].getTrayLettersUsed();
+
+        // update unseen tile quantities
+        for (String letter : newLettersAddedToBoard) {
+
+            char tile;
+            if (Character.isLowerCase(letter.charAt(0))) tile = '~';
+            else tile = letter.charAt(0);
+
+            if (unseenTiles.get(tile) > 0) {
+                unseenTiles.put(tile, unseenTiles.get(tile) - 1);
+            }
+        }
 
         for (Word playedWord : incidentalsFormed) {
             playedWords.add(playedWord);
@@ -240,19 +247,17 @@ public class Board {
             boardDeepCopy.states.add(board);
         }
 
+        boardDeepCopy.unseenTiles = new HashMap<>(this.unseenTiles);
+
         return boardDeepCopy;
     }
 
     public Board getPreviousState() {
-        System.out.printf("There are currently %s states saved\n", states.size());
-        Board previousState = states.get(states.size() - 1);
-        System.out.println("Previous board to revert to: ");
-        previousState.show('L');
         return states.get(states.size() - 1);
     }
 
     public Map<Character, Integer> getUnseenTiles() {
-        return this.unseenTiles;
+        return new HashMap<>(this.unseenTiles);
     }
 
     public Set<Integer> getPossibleStarts() {

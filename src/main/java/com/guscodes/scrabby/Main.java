@@ -32,15 +32,13 @@ public class Main {
 
             final MoveFinder moveFinder = new MoveFinder(wordHandler);
             final Generator generator = new Generator(moveFinder, validator, scorer, true,
-                    0, true, wordHandler);
+                    2, true, wordHandler);
             Word topRecommendation = new Word("UNSETWORDTOPLAY", new int[]{7, 7}, 'H');
 
             //Main loop
             while (true) {
 
                 board.show('L');
-                board.show('A');
-                board.show('S');
 
                 // find out if the user would like to add a word or get a suggestion
                 String action = ui.getActionFromUser();

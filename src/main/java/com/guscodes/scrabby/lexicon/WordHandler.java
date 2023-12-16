@@ -6,7 +6,7 @@ import java.util.*;
 public class WordHandler {
     private Map<String, String> definedDictionary = new HashMap<>();
     private Trie dictTrie;
-    private Map<Character, Integer> frequencyTable = new HashMap<>();
+    private Map<Character, Double> frequencyTable = new HashMap<>();
 
     public void addUserWord(String word) {
         definedDictionary.put(word, "USER ADDED WORD");
@@ -52,27 +52,40 @@ public class WordHandler {
     }
 
     public void buildLetterFrequencyTable(Collection<String> dictionary) {
-        HashMap<Character, Integer> letterFreqs = new HashMap<>();
+        HashMap<Character, Double> letterFreqs = new HashMap<>();
         for (char letter : "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray()) {
-            letterFreqs.put(letter, 0);
+            letterFreqs.put(letter, 0.0);
         }
 
         // find how often each letter appears
+
         for (String word : dictionary) {
-            for (char letter : word.toCharArray()) {
-                int oldValue = letterFreqs.get(letter);
-                letterFreqs.put(letter, oldValue + 1);
+            List<String> wordLetters = Arrays.asList(word.split(""));
+            for (char letter : letterFreqs.keySet()) {
+                if (wordLetters.contains(String.valueOf(letter))) {
+                    letterFreqs.put(letter, letterFreqs.get(letter) + 1);
+                }
             }
         }
+
+        int dictSize = dictionary.size();
+        for (char letter :  letterFreqs.keySet()) {
+            letterFreqs.put(letter, letterFreqs.get(letter) / dictSize);
+        }
+        letterFreqs.put('~', 1.0);
+
         this.frequencyTable = letterFreqs;
         System.out.printf("Letter frequencies analysed for %d words\n", dictionary.size());
+        for (char letter : letterFreqs.keySet()) {
+            System.out.println(letter + ": " + letterFreqs.get(letter));
+        }
     }
 
     public TrieNode getTrieRoot() {
         return dictTrie.getRootTrieNode();
     }
 
-    public Map<Character, Integer> getFrequencyTable() {
+    public Map<Character, Double> getFrequencyTable() {
         return this.frequencyTable;
     }
 }
