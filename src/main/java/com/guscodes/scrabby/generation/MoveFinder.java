@@ -12,7 +12,7 @@ public class MoveFinder {
     private Square[] boardSquares;
     private final Set<Word> wordsFound = new HashSet<>();
     private final TrieNode rootNode;
-    StringBuilder stringBuilder = new StringBuilder(15);
+    StringBuilder stringBuilder = new StringBuilder();
 
     public MoveFinder(WordHandler wordHandler) {
         rootNode = wordHandler.getTrieRoot();
@@ -22,16 +22,16 @@ public class MoveFinder {
         this.wordsFound.clear();
         this.boardSquares = boardSquares;
 
-        stringBuilder.setLength(0);
-        extendAfter(rootNode, startLocation, 'H', startLocation, tray, stringBuilder);
+        stringBuilder.delete(0, stringBuilder.length());
+        extendAfter(rootNode, startLocation, 'H', startLocation, tray, "");
 
-        stringBuilder.setLength(0);
-        extendAfter(rootNode, startLocation, 'V', startLocation, tray, stringBuilder);
+        stringBuilder.delete(0, stringBuilder.length());
+        extendAfter(rootNode, startLocation, 'V', startLocation, tray, "");
         return this.wordsFound;
     }
 
     private void extendAfter(TrieNode node, int location, char orientation,
-                                    int originalStart, List<String> tray, StringBuilder stringBuilder) {
+                                    int originalStart, List<String> tray, String partialWord) {
 
         Square startSquare = boardSquares[location];
         String contents = String.valueOf(startSquare.getContents());
@@ -44,8 +44,8 @@ public class MoveFinder {
 
             // if this node is the end of a word in the trie
             if (node.isTerminal()) {
-                System.out.println(stringBuilder.toString() + stringBuilder.length() + "\n");
-                wordsFound.add(new Word(stringBuilder.toString(), originalStart, orientation));
+                Word newWordFound = new Word(partialWord, originalStart, orientation);
+                wordsFound.add(newWordFound);
             }
 
             // see if any words can continue from the square trying each of the remaining tray letters
@@ -54,26 +54,26 @@ public class MoveFinder {
                     TrieNode newNode = nextNodes.get(letter.toUpperCase());
                     List<String> newTray = new ArrayList<>(tray);
                     newTray.remove(letter);
-                    stringBuilder.append(letter);
+                    String newWord = partialWord + letter;
 
                     try {
                         int nextLocation = Utils.nextLocation(location, orientation);
                         if (nextLocation == -1) {
                             // next square would be the edge of the board so the word must end here
                             if (newNode.isTerminal()) {
-                                wordsFound.add(new Word(stringBuilder.toString(), originalStart, orientation));
+                                Word newWordFound = new Word(newWord, originalStart, orientation);
+                                wordsFound.add(newWordFound);
                             }
                         }
 
                         else {
-                            extendAfter(newNode, nextLocation, orientation, originalStart, newTray, stringBuilder);
+                            extendAfter(newNode, nextLocation, orientation, originalStart, newTray, newWord);
                         }
                     }
 
                     catch (IllegalArgumentException e) {
                         System.out.println("Orientation used in MoveFinder must only be 'H' or 'V'");
                     }
-                    stringBuilder
                 }
             }
         }
@@ -81,17 +81,18 @@ public class MoveFinder {
         // if square has already been played, check if the tile in it can add to the word at all
         else if (nextLetters.contains(contents.toUpperCase())) {
             TrieNode newNode = nextNodes.get(contents.toUpperCase());
-            stringBuilder.append(contents);
+            String newWord = partialWord + contents;
             try {
                 int nextLocation = Utils.nextLocation(location, orientation);
                 if (nextLocation == -1) {
                     // edge of board is reached, word must end here
                     if (newNode.isTerminal()) {
-                        wordsFound.add(new Word(stringBuilder.toString(), originalStart, orientation));
+                        Word newWordFound = new Word(newWord, originalStart, orientation);
+                        wordsFound.add(newWordFound);
                     }
                 }
                 else {
-                    extendAfter(newNode, nextLocation, orientation, originalStart, tray, stringBuilder);
+                    extendAfter(newNode, nextLocation, orientation, originalStart, tray, newWord);
                 }
             }
 

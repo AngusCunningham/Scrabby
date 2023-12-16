@@ -203,7 +203,7 @@ public class Validator {
         int currentLocation = location;
         while (true) {
             currentLocation = Utils.lastLocation(currentLocation, incidentalDirection);
-            if (currentLocation < 0) {
+            if (currentLocation == -1) {
                 // edge of board exceeded
                 break;
             }
