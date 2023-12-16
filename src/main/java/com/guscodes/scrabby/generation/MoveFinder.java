@@ -23,15 +23,15 @@ public class MoveFinder {
         this.boardSquares = boardSquares;
 
         stringBuilder.setLength(0);
-        extendAfter(rootNode, startLocation, 'H', startLocation, tray, "");
+        extendAfter(rootNode, startLocation, 'H', startLocation, tray, stringBuilder);
 
         stringBuilder.setLength(0);
-        extendAfter(rootNode, startLocation, 'V', startLocation, tray, "");
+        extendAfter(rootNode, startLocation, 'V', startLocation, tray, stringBuilder);
         return this.wordsFound;
     }
 
     private void extendAfter(TrieNode node, int location, char orientation,
-                                    int originalStart, List<String> tray, String partialWord) {
+                                    int originalStart, List<String> tray, StringBuilder stringBuilder) {
 
         Square startSquare = boardSquares[location];
         String contents = String.valueOf(startSquare.getContents());
@@ -44,8 +44,8 @@ public class MoveFinder {
 
             // if this node is the end of a word in the trie
             if (node.isTerminal()) {
-                Word newWordFound = new Word(partialWord, originalStart, orientation);
-                wordsFound.add(newWordFound);
+                System.out.println(stringBuilder.toString() + stringBuilder.length() + "\n");
+                wordsFound.add(new Word(stringBuilder.toString(), originalStart, orientation));
             }
 
             // see if any words can continue from the square trying each of the remaining tray letters
@@ -54,26 +54,26 @@ public class MoveFinder {
                     TrieNode newNode = nextNodes.get(letter.toUpperCase());
                     List<String> newTray = new ArrayList<>(tray);
                     newTray.remove(letter);
-                    String newWord = partialWord + letter;
+                    stringBuilder.append(letter);
 
                     try {
                         int nextLocation = Utils.nextLocation(location, orientation);
                         if (nextLocation == -1) {
                             // next square would be the edge of the board so the word must end here
                             if (newNode.isTerminal()) {
-                                Word newWordFound = new Word(newWord, originalStart, orientation);
-                                wordsFound.add(newWordFound);
+                                wordsFound.add(new Word(stringBuilder.toString(), originalStart, orientation));
                             }
                         }
 
                         else {
-                            extendAfter(newNode, nextLocation, orientation, originalStart, newTray, newWord);
+                            extendAfter(newNode, nextLocation, orientation, originalStart, newTray, stringBuilder);
                         }
                     }
 
                     catch (IllegalArgumentException e) {
                         System.out.println("Orientation used in MoveFinder must only be 'H' or 'V'");
                     }
+                    stringBuilder
                 }
             }
         }
@@ -81,18 +81,17 @@ public class MoveFinder {
         // if square has already been played, check if the tile in it can add to the word at all
         else if (nextLetters.contains(contents.toUpperCase())) {
             TrieNode newNode = nextNodes.get(contents.toUpperCase());
-            String newWord = partialWord + contents;
+            stringBuilder.append(contents);
             try {
                 int nextLocation = Utils.nextLocation(location, orientation);
                 if (nextLocation == -1) {
                     // edge of board is reached, word must end here
                     if (newNode.isTerminal()) {
-                        Word newWordFound = new Word(newWord, originalStart, orientation);
-                        wordsFound.add(newWordFound);
+                        wordsFound.add(new Word(stringBuilder.toString(), originalStart, orientation));
                     }
                 }
                 else {
-                    extendAfter(newNode, nextLocation, orientation, originalStart, tray, newWord);
+                    extendAfter(newNode, nextLocation, orientation, originalStart, tray, stringBuilder);
                 }
             }
 
