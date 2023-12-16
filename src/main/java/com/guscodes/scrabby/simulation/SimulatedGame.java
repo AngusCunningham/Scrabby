@@ -78,7 +78,7 @@ public class SimulatedGame {
         for (double testValue : testParameterValues) {
             System.out.printf("Value of %f produces a test win fraction of: %f \n",
                     testValue, finalResults.get(testValue));
-            System.out.printf("Average game time is %d seconds\n", finalTimes.get(testValue));
+            System.out.printf("Average game time is %f seconds\n", finalTimes.get(testValue));
         }
     }
 
@@ -136,14 +136,14 @@ public class SimulatedGame {
         }
 
 
-        board.show('L');
+        // board.show('L');
         //System.out.printf("Game %d of %d completed\n\n", iterationsPlayed, totalIterations);
         //System.out.printf("Player 1 scored: %d\n", controlFinalScore);
         //System.out.printf("Player 2 scored: %d\n", testFinalScore);
         double averageSecondsPerGame = (double) (nanoTimeTotal / iterationsPlayed) / 1000000000;
         float player1Average = (float) controlTotalScore / iterationsPlayed;
         float player2Average = (float) testTotalScore / iterationsPlayed;
-        //float fractionGamesWonByPlayer1 = (float) gamesWonByControl / iterationsPlayed;
+        float fractionGamesWonByPlayer1 = (float) gamesWonByControl / iterationsPlayed;
         float fractionGamesWonByTest = (float) gamesWonByTest / iterationsPlayed;
 
         System.out.println("Control Average Score: " + player1Average);

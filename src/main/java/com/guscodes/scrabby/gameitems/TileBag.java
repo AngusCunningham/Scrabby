@@ -1,5 +1,7 @@
 package com.guscodes.scrabby.gameitems;
 
+import com.guscodes.scrabby.Data;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -9,53 +11,13 @@ public class TileBag {
     private Random random = new Random();
 
     public TileBag() {
-        lettersRemaining.add('X');
-        lettersRemaining.add('Z');
-        lettersRemaining.add('Q');
-        lettersRemaining.add('J');
-        lettersRemaining.add('K');
-
-        for (int i = 0; i < 2; i++) {
-            lettersRemaining.add('B');
-            lettersRemaining.add('C');
-            lettersRemaining.add('M');
-            lettersRemaining.add('F');
-            lettersRemaining.add('H');
-            lettersRemaining.add('P');
-            lettersRemaining.add('V');
-            lettersRemaining.add('W');
-            lettersRemaining.add('Y');
-            lettersRemaining.add('~');
-        }
-
-        for (int i = 0; i < 3; i++) {
-            lettersRemaining.add('G');
-        }
-
-        for (int i = 0; i < 4; i++) {
-            lettersRemaining.add('D');
-            lettersRemaining.add('L');
-            lettersRemaining.add('U');
-            lettersRemaining.add('S');
-        }
-
-        for (int i = 0; i < 6; i++) {
-            lettersRemaining.add('R');
-            lettersRemaining.add('T');
-            lettersRemaining.add('N');
-        }
-
-        for (int i = 0; i < 8; i++) {
-            lettersRemaining.add('O');
-        }
-
-        for (int i = 0; i < 9; i++) {
-            lettersRemaining.add('A');
-            lettersRemaining.add('I');
-        }
-
-        for (int i = 0; i < 12; i++) {
-            lettersRemaining.add('E');
+        for (char letter : Data.LETTER_QUANTITIES.keySet()) {
+            int quantity = Data.LETTER_QUANTITIES.get(letter);
+            int addedToTileBag = 0;
+            while (addedToTileBag < quantity) {
+                lettersRemaining.add(letter);
+                addedToTileBag += 1;
+            }
         }
     }
 

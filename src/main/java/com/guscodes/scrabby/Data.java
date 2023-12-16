@@ -53,7 +53,91 @@ public class Data {
         }
     }
 
+    private static Map<Character, Integer> LETTER_COUNTS = new HashMap<>();
+    static {
+        LETTER_COUNTS.put('A', 9);
+        LETTER_COUNTS.put('B', 2);
+        LETTER_COUNTS.put('C', 2);
+        LETTER_COUNTS.put('D', 4);
+        LETTER_COUNTS.put('E', 12);
+        LETTER_COUNTS.put('F', 2);
+        LETTER_COUNTS.put('G', 3);
+        LETTER_COUNTS.put('H', 2);
+        LETTER_COUNTS.put('I', 9);
+        LETTER_COUNTS.put('J', 1);
+        LETTER_COUNTS.put('K', 1);
+        LETTER_COUNTS.put('L', 4);
+        LETTER_COUNTS.put('M', 2);
+        LETTER_COUNTS.put('N', 6);
+        LETTER_COUNTS.put('O', 8);
+        LETTER_COUNTS.put('P', 2);
+        LETTER_COUNTS.put('Q', 1);
+        LETTER_COUNTS.put('R', 6);
+        LETTER_COUNTS.put('S', 4);
+        LETTER_COUNTS.put('T', 6);
+        LETTER_COUNTS.put('U', 4);
+        LETTER_COUNTS.put('V', 2);
+        LETTER_COUNTS.put('W', 2);
+        LETTER_COUNTS.put('X', 1);
+        LETTER_COUNTS.put('Y', 2);
+        LETTER_COUNTS.put('Z', 1);
+        LETTER_COUNTS.put('~', 2);
+    }
+
+    public static final Map<Character, Integer> LETTER_QUANTITIES = new HashMap<>(LETTER_COUNTS);
+
     public static final Map<Character, Integer> LETTER_SCORES = new HashMap<>(TILE_POINTS);
 
-
 }
+
+/*
+
+        lettersRemaining.add('X');
+        lettersRemaining.add('Z');
+        lettersRemaining.add('Q');
+        lettersRemaining.add('J');
+        lettersRemaining.add('K');
+
+        for (int i = 0; i < 2; i++) {
+            lettersRemaining.add('B');
+            lettersRemaining.add('C');
+            lettersRemaining.add('M');
+            lettersRemaining.add('F');
+            lettersRemaining.add('H');
+            lettersRemaining.add('P');
+            lettersRemaining.add('V');
+            lettersRemaining.add('W');
+            lettersRemaining.add('Y');
+            lettersRemaining.add('~');
+        }
+
+        for (int i = 0; i < 3; i++) {
+            lettersRemaining.add('G');
+        }
+
+        for (int i = 0; i < 4; i++) {
+            lettersRemaining.add('D');
+            lettersRemaining.add('L');
+            lettersRemaining.add('U');
+            lettersRemaining.add('S');
+        }
+
+        for (int i = 0; i < 6; i++) {
+            lettersRemaining.add('R');
+            lettersRemaining.add('T');
+            lettersRemaining.add('N');
+        }
+
+        for (int i = 0; i < 8; i++) {
+            lettersRemaining.add('O');
+        }
+
+        for (int i = 0; i < 9; i++) {
+            lettersRemaining.add('A');
+            lettersRemaining.add('I');
+        }
+
+        for (int i = 0; i < 12; i++) {
+            lettersRemaining.add('E');
+        }
+ */

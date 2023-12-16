@@ -1,6 +1,7 @@
 package com.guscodes.scrabby.generation;
 
 import com.guscodes.scrabby.Data;
+import com.guscodes.scrabby.gameitems.Square;
 import com.guscodes.scrabby.gameitems.Word;
 import com.guscodes.scrabby.gameitems.Board;
 
@@ -138,6 +139,19 @@ public class Strategist {
 
         //System.out.printf("After playing %s, %s remains in tray, tray rated %d\n", word.getWord(), remainingTray, trayRating);
         return trayRating;
+    }
+
+    private int rateTrayLeave(String originalTray, List<String> usedTiles, Map<String, Double> tileRatings) {
+        int leaveScore = 15 * Data.MAX_TRAY_SIZE;
+        if (! (usedTiles.size() == Data.EMPTY_RACK_BONUS)) {
+            String remainingTray = getTrayLeave(originalTray, usedTiles);
+            List<String> remainingTiles = Arrays.asList(remainingTray.strip().split(""));
+            for (String tile : remainingTiles) {
+
+            }
+
+        }
+        return leaveScore;
     }
 
     private String getTrayLeave(String originalTray, List<String> tilesUsed) {

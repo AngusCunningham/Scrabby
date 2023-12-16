@@ -14,6 +14,7 @@ public class Board {
     private List<Square> playedSquares = new ArrayList<>();
 
     private List<Board> states = new ArrayList<>();
+    private Map<Character, Integer> unseenTiles = new HashMap<>(Data.LETTER_QUANTITIES);
     boolean allowUndo;
 
     private Validator validator;
@@ -161,7 +162,15 @@ public class Board {
 
         for (int index=0; index < wordLetters.length; index++) {
             //add letters to board squares
-            squares[letterLocations[index]].setContents(wordLetters[index]);
+            char tileChar = wordLetters[index];
+            squares[letterLocations[index]].setContents(tileChar);
+
+            // update unseen tile quantities
+            char tile;
+            if (Character.isLowerCase(tileChar)) tile = '~';
+            else tile = tileChar;
+
+            unseenTiles.put(tile, unseenTiles.get(tile) - 1);
         }
 
         int score = scorer.getTotalScore(incidentalsFormed, this);
@@ -231,6 +240,10 @@ public class Board {
         System.out.println("Previous board to revert to: ");
         previousState.show('L');
         return states.get(states.size() - 1);
+    }
+
+    public Map<Character, Integer> getUnseenTiles() {
+        return this.unseenTiles;
     }
 }
 

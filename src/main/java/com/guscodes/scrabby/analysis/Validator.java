@@ -47,6 +47,7 @@ public class Validator {
         String plainWord = inputWord.toUpperCase();
         char orientation = word.getOrientation();
         Square[] currentBoardSquares = board.getSquares();
+
         Word inlineIncidental = findInlineIncidental(plainWord, locations, orientation, currentBoardSquares);
         if (! inlineIncidentalIsValid(inlineIncidental)) {
             return null;

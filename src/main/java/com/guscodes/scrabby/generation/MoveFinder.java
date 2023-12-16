@@ -12,6 +12,7 @@ public class MoveFinder {
     private Square[] boardSquares;
     private final Set<Word> wordsFound = new HashSet<>();
     private final TrieNode rootNode;
+    StringBuilder stringBuilder = new StringBuilder(15);
 
     public MoveFinder(WordHandler wordHandler) {
         rootNode = wordHandler.getTrieRoot();
@@ -20,7 +21,11 @@ public class MoveFinder {
     public Set<Word> getAllMovesFrom(int startLocation, List<String> tray, Square[] boardSquares) {
         this.wordsFound.clear();
         this.boardSquares = boardSquares;
+
+        stringBuilder.setLength(0);
         extendAfter(rootNode, startLocation, 'H', startLocation, tray, "");
+
+        stringBuilder.setLength(0);
         extendAfter(rootNode, startLocation, 'V', startLocation, tray, "");
         return this.wordsFound;
     }
