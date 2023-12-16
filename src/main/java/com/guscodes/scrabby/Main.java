@@ -17,6 +17,7 @@ public class Main {
         final WordHandler wordHandler = new WordHandler();
         final UserInterface ui = new UserInterface(scanner, wordHandler);
         wordHandler.buildDefinedDictionary("CSW19DEF.txt");
+        wordHandler.buildLetterFrequencyTable(wordHandler.getDefinedDictionary().keySet());
         final Validator validator = new Validator(wordHandler);
         final Scorer scorer = new Scorer();
 
@@ -31,13 +32,15 @@ public class Main {
 
             final MoveFinder moveFinder = new MoveFinder(wordHandler);
             final Generator generator = new Generator(moveFinder, validator, scorer, true,
-                    0, true);
-            Word topRecommendation = null;
+                    0, true, wordHandler);
+            Word topRecommendation = new Word("UNSETWORDTOPLAY", new int[]{7, 7}, 'H');
 
             //Main loop
             while (true) {
 
                 board.show('L');
+                board.show('A');
+                board.show('S');
 
                 // find out if the user would like to add a word or get a suggestion
                 String action = ui.getActionFromUser();
@@ -47,7 +50,12 @@ public class Main {
                     //add a new word to the board
                     String word = ui.getWordFromUser(topRecommendation);
                     if (word.equals("PLAY_TOP_REC") && topRecommendation != null) {
-                        board.addWord(topRecommendation);
+                        try {
+                            board.addWord(topRecommendation);
+                        }
+                        catch (IllegalArgumentException e){
+                                System.out.println("That play was not valid, please try again");
+                        }
                     }
 
                     else {

@@ -92,6 +92,7 @@ public class Board {
             if (line < 10) {
                 row += " ";
             }
+            Set<Integer> startLocations = this.getPossibleStarts();
             for (int column = 0; column < 15; column ++) {
                 int position = (line * 15) + column;
                 if (toShow == 'L') {
@@ -105,7 +106,7 @@ public class Board {
                         row += 'A';
                     }
                     else {
-                        row += 'N';
+                        row += ' ';
                     }
                 }
                 if (toShow == 'N') {
@@ -116,6 +117,14 @@ public class Board {
                     }
                     else if (number < 100) {
                         row += " ";
+                    }
+                }
+                if (toShow == 'S') {
+                    if (startLocations.contains(position)) {
+                        row += 'S';
+                        }
+                    else {
+                        row += ' ';
                     }
                 }
                 row += "  ";
@@ -244,6 +253,23 @@ public class Board {
 
     public Map<Character, Integer> getUnseenTiles() {
         return this.unseenTiles;
+    }
+
+    public Set<Integer> getPossibleStarts() {
+        Set<Integer> possibleStarts = new HashSet<>();
+        for (int accessibleLocation : getAccessibleLocations()) {
+            int[] accessibleLocationCoords = Utils.toBoardCoordinates(accessibleLocation);
+            for (int location = 0; location < this.squares.length; location ++) {
+                int[] locationCoords = Utils.toBoardCoordinates(location);
+                boolean inSameColumn = accessibleLocationCoords[0] == locationCoords[0];
+                boolean inSameRow = accessibleLocationCoords[1] == locationCoords[1];
+                boolean before = location <= accessibleLocation;
+                if ((inSameRow || inSameColumn) && before) {
+                    possibleStarts.add(location);
+                }
+            }
+        }
+        return possibleStarts;
     }
 }
 

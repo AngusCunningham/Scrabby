@@ -5,6 +5,7 @@ import com.guscodes.scrabby.Data;
 import com.guscodes.scrabby.analysis.Scorer;
 import com.guscodes.scrabby.gameitems.Word;
 import com.guscodes.scrabby.gameitems.Board;
+import com.guscodes.scrabby.lexicon.WordHandler;
 
 import java.util.*;
 
@@ -19,14 +20,15 @@ public class Generator {
     Strategist strategist;
 
     public Generator(MoveFinder moveFinder, Validator validator, Scorer scorer,
-                     boolean useExperimentalFeatures, double testParameter, boolean verbose) {
+                     boolean useExperimentalFeatures, double testParameter, boolean verbose,
+                     WordHandler wordHandler) {
         this.validator = validator;
         this.scorer = scorer;
         this.useExperimentalFeatures = useExperimentalFeatures;
         this.testParameter = (float) testParameter;
         this.moveFinder = moveFinder;
         this.verbose = verbose;
-        this.strategist = new Strategist();
+        this.strategist = new Strategist(wordHandler);
     }
 
     public Set<Word> getSuggestions(String tray, Board board) {
@@ -41,10 +43,7 @@ public class Generator {
         Set<String> allTrays = trayVersions(tray);
         for (String trayVersion : allTrays) {
             List<String> trayLetters = Arrays.asList(trayVersion.split(""));
-
-            for (int location = 0; location < 225; location++) {
-                suggestedWords.addAll(moveFinder.getAllMovesFrom(location, trayLetters, board.getSquares()));
-            }
+            suggestedWords.addAll(moveFinder.getAllPossiblePlays(trayLetters, board));
         }
 
         Set<Word> scoredAndValidatedSuggestions = filterValidateAndScore(suggestedWords);
@@ -64,7 +63,7 @@ public class Generator {
         long endTime = System.nanoTime();
         double elapsedTimeInSeconds = (double) (endTime - startTime) / 1000000000;
         if (verbose) {
-            System.out.printf("%d plays analysed in %f seconds, %d valid plays found\n", suggestedWords.size(),
+            System.out.printf("%d possible plays analysed in %f seconds, %d valid plays found\n", suggestedWords.size(),
                     elapsedTimeInSeconds, scoredAndValidatedSuggestions.size());
         }
         return scoredAndValidatedSuggestions;

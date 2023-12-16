@@ -6,6 +6,7 @@ import java.util.*;
 public class WordHandler {
     private Map<String, String> definedDictionary = new HashMap<>();
     private Trie dictTrie;
+    private Map<Character, Integer> frequencyTable = new HashMap<>();
 
     public void addUserWord(String word) {
         definedDictionary.put(word, "USER ADDED WORD");
@@ -50,9 +51,8 @@ public class WordHandler {
         return this.definedDictionary;
     }
 
-    public HashMap<Character, Float> letterFrequencyInDictionary(Collection<String> dictionary) {
+    public void buildLetterFrequencyTable(Collection<String> dictionary) {
         HashMap<Character, Integer> letterFreqs = new HashMap<>();
-        HashMap<Character, Float> fractionalLetterFreqs = new HashMap<>();
         for (char letter : "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray()) {
             letterFreqs.put(letter, 0);
         }
@@ -64,24 +64,15 @@ public class WordHandler {
                 letterFreqs.put(letter, oldValue + 1);
             }
         }
-
-        // find the total number of letter appearances
-        int totalAppearances = 0;
-        for (char letter : letterFreqs.keySet()) {
-            totalAppearances += letterFreqs.get(letter);
-        }
-
-        // write letter frequency as a percentage
-        for (char letter : letterFreqs.keySet()) {
-            float fractionOfLettersInAllWords = (float) letterFreqs.get(letter) / totalAppearances;
-            fractionalLetterFreqs.put(letter, fractionOfLettersInAllWords);
-            System.out.printf("%c : %f\n", letter, fractionOfLettersInAllWords);
-        }
-
-        return fractionalLetterFreqs;
+        this.frequencyTable = letterFreqs;
+        System.out.printf("Letter frequencies analysed for %d words\n", dictionary.size());
     }
 
     public TrieNode getTrieRoot() {
         return dictTrie.getRootTrieNode();
+    }
+
+    public Map<Character, Integer> getFrequencyTable() {
+        return this.frequencyTable;
     }
 }

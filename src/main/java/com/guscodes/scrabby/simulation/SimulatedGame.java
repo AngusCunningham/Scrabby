@@ -33,7 +33,7 @@ public class SimulatedGame {
 
     public void simulateNGames(int n) {
 
-        double[] testParameterValues = {95, 97, 100, 80, 82, 85, 87, 90, 92};
+        double[] testParameterValues = {0.5, 1, 2, 0.25, 0, 0.1, 0.75};
 
         Map<Double, Double> finalResults = new HashMap<>();
         Map<Double, Double> finalTimes = new HashMap<>();
@@ -87,8 +87,8 @@ public class SimulatedGame {
         TileBag tileBag = new TileBag();
         MoveFinder moveFinder = new MoveFinder(wordHandler);
 
-        Generator baseGen = new Generator(moveFinder, validator, scorer, false, 0, false);
-        Generator testGen = new Generator(moveFinder, validator, scorer, true, testParameter, false);
+        Generator baseGen = new Generator(moveFinder, validator, scorer, false, 0, false, wordHandler);
+        Generator testGen = new Generator(moveFinder, validator, scorer, true, testParameter, false, wordHandler);
 
         VirtualPlayer controlPlayer = new VirtualPlayer(baseGen, board, tileBag, scorer);
         VirtualPlayer testPlayer = new VirtualPlayer(testGen, board, tileBag, scorer);
@@ -96,7 +96,8 @@ public class SimulatedGame {
         VirtualPlayer[] players = {controlPlayer, testPlayer};
 
         boolean playingOn = true;
-        System.out.printf("Beginning game %d out of %d\n", iterationsPlayed + 1, totalIterations);
+        System.out.printf("Beginning game %d out of %d for testParameter %f\n", iterationsPlayed + 1,
+                                                                                        totalIterations, testParameter);
         long startTime = System.nanoTime();
         while (playingOn) {
             for (VirtualPlayer player : players) {

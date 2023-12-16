@@ -1,9 +1,9 @@
 package com.guscodes.scrabby.generation;
 
 import com.guscodes.scrabby.Data;
-import com.guscodes.scrabby.gameitems.Square;
 import com.guscodes.scrabby.gameitems.Word;
 import com.guscodes.scrabby.gameitems.Board;
+import com.guscodes.scrabby.lexicon.WordHandler;
 
 import java.util.*;
 
@@ -37,17 +37,21 @@ public class Strategist {
             however this is still more beneficial than keeping a Q on the rack.
     */
     private Board board;
-
+    private final WordHandler wordHandler;
+    private final Map<Character, Integer> frequencyTable;
     //flags
-    boolean efficientBlankUsage = true;
-    boolean preferLowerRackScore = true;
-    boolean preferNoRepeatsInRack = true;
+    boolean efficientBlankUsage = false;
+    boolean preferLowerRackScore = false;
+    boolean preferNoRepeatsInRack = false;
     boolean preferRETAINSRack = true;
 
-
+    public Strategist(WordHandler wordHandler) {
+        this.wordHandler = wordHandler;
+        this.frequencyTable = wordHandler.getFrequencyTable();
+    }
     public Set<Word> getStrategicRatings(Set<Word> words, String originalTray, Board board, double testParameter) {
         this.board = board;
-        boolean isEndGame = board.getPlayedLocations().size() > testParameter;
+        boolean isEndGame = board.getPlayedLocations().size() > 82;
         //System.out.printf("Endgame: %b\n", isEndGame);
         for (Word word : words) {
             //System.out.printf("%s old rating: %d\n", word.getWord(), word.getRating());
@@ -63,7 +67,8 @@ public class Strategist {
                 }
 
                 if (preferRETAINSRack) {
-                    double modifier = 1 + ((rateRETAINSQuality(word, originalTray) * 0.1));
+                    double modifier = 1 + ((rateRETAINSQuality(word, originalTray) * testParameter));
+                    //System.out.printf("RETAINS~ modifier for %s is %f\n", word.getWord(), modifier);
                     word.modifyRatingByMultiplier(modifier);
                 }
             }
@@ -80,7 +85,7 @@ public class Strategist {
     }
 
     private int rateBlankUsage(Word word) {
-        if (word.getTrayLettersUsed().size() < Data.EMPTY_RACK_BONUS && word.getScore() < 50) {
+        if ((word.getTrayLettersUsed().size() < Data.EMPTY_RACK_BONUS) && (word.getScore() < 50)) {
             for (String tile : word.getTrayLettersUsed()) {
                 if (Character.isLowerCase(tile.charAt(0))) {
                     return 0;
@@ -129,11 +134,10 @@ public class Strategist {
     private int rateRETAINSQuality(Word word, String originalTray) {
         String remainingTray = getTrayLeave(originalTray, word.getTrayLettersUsed());
 
-        int trayRating = Data.MAX_TRAY_SIZE;
+        int trayRating =
         for (char letter : remainingTray.toCharArray()) {
-            //todo: fix this daftness
-            if (! Arrays.asList( "RETAINS~".split("")).contains(letter))  {
-                trayRating -= 1;
+            if (letter == '~') {
+                trayRating += 2;
             }
         }
 
@@ -141,17 +145,41 @@ public class Strategist {
         return trayRating;
     }
 
-    private int rateTrayLeave(String originalTray, List<String> usedTiles, Map<String, Double> tileRatings) {
-        int leaveScore = 15 * Data.MAX_TRAY_SIZE;
+    private double rateTrayLeave(String originalTray, List<String> usedTiles, Map<String, Double> tileRatings) {
+        Map<Character, Integer> unseenTiles = board.getUnseenTiles();
+        for (String tile : usedTiles) {
+            char tileChar = tile.charAt(0);
+            unseenTiles.put(tileChar, unseenTiles.get(tileChar) - 1);
+        }
+
+        int unseenTileTotalValue = 0;
+        int totalTilesRemaining = 0;
+        for (char tile : unseenTiles.keySet()) {
+            int quantityOfTileUnseen = unseenTiles.get(tile);
+            unseenTileTotalValue += quantityOfTileUnseen * frequencyTable.get(tile);
+            totalTilesRemaining += quantityOfTileUnseen;
+        }
+
+        double averageUnseenTileValue = (double) unseenTileTotalValue / totalTilesRemaining;
+
+        int newTileSlotsInTray = Data.MAX_TRAY_SIZE - usedTiles.size();
+
+        double trayRating = newTileSlotsInTray * averageUnseenTileValue;
+
         if (! (usedTiles.size() == Data.EMPTY_RACK_BONUS)) {
+
             String remainingTray = getTrayLeave(originalTray, usedTiles);
             List<String> remainingTiles = Arrays.asList(remainingTray.strip().split(""));
+
+            List<String> tilesInTray = new ArrayList<>();
             for (String tile : remainingTiles) {
-
+                if (! (tilesInTray.contains(tile))) {
+                    trayRating += frequencyTable.get(tile.charAt(0));
+                }
+                tilesInTray.add(tile);
             }
-
         }
-        return leaveScore;
+        return trayRating;
     }
 
     private String getTrayLeave(String originalTray, List<String> tilesUsed) {

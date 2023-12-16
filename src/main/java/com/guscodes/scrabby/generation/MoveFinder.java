@@ -1,5 +1,6 @@
 package com.guscodes.scrabby.generation;
 
+import com.guscodes.scrabby.gameitems.Board;
 import com.guscodes.scrabby.gameitems.Square;
 import com.guscodes.scrabby.Utils;
 import com.guscodes.scrabby.gameitems.Word;
@@ -12,21 +13,19 @@ public class MoveFinder {
     private Square[] boardSquares;
     private final Set<Word> wordsFound = new HashSet<>();
     private final TrieNode rootNode;
-    StringBuilder stringBuilder = new StringBuilder();
 
     public MoveFinder(WordHandler wordHandler) {
         rootNode = wordHandler.getTrieRoot();
     }
 
-    public Set<Word> getAllMovesFrom(int startLocation, List<String> tray, Square[] boardSquares) {
+    public Set<Word> getAllPossiblePlays(List<String> tray, Board board) {
         this.wordsFound.clear();
-        this.boardSquares = boardSquares;
-
-        stringBuilder.delete(0, stringBuilder.length());
-        extendAfter(rootNode, startLocation, 'H', startLocation, tray, "");
-
-        stringBuilder.delete(0, stringBuilder.length());
-        extendAfter(rootNode, startLocation, 'V', startLocation, tray, "");
+        this.boardSquares = board.getSquares();
+        Set<Integer> possibleStarts = board.getPossibleStarts();
+        for (int startLocation : possibleStarts) {
+            extendAfter(rootNode, startLocation, 'H', startLocation, tray, "");
+            extendAfter(rootNode, startLocation, 'V', startLocation, tray, "");
+        }
         return this.wordsFound;
     }
 
