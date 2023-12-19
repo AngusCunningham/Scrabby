@@ -4,15 +4,15 @@ import com.guscodes.scrabby.gameitems.Square;
 import com.guscodes.scrabby.Utils;
 import com.guscodes.scrabby.gameitems.Word;
 import com.guscodes.scrabby.gameitems.Board;
-import com.guscodes.scrabby.lexicon.WordHandler;
+import com.guscodes.scrabby.lexicon.DictHandler;
 
 import java.util.*;
 
 public class Validator {
     private Board board;
     private final Set<String> dictionary;
-    public Validator(WordHandler wordHandler) {
-        this.dictionary = wordHandler.getDefinedDictionary().keySet();
+    public Validator(DictHandler dictHandler) {
+        this.dictionary = dictHandler.getDefinedDictionary().keySet();
     }
 
     public Word[] validate(Word word, Board board) {

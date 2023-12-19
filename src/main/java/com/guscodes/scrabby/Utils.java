@@ -93,4 +93,14 @@ public class Utils {
         Collections.sort(sortedWords);
         return sortedWords;
     }
+
+    public static Map<Character, Integer> counter(String stringToCount) {
+        Map<Character, Integer> count = new HashMap<>();
+        for (char alphabetLetter : "ABCDEFGHIJKLMNOPQRSTUVWXYZ~".toCharArray()) count.put(alphabetLetter, 0);
+        char[] stringChars = stringToCount.toCharArray();
+        for (Character stringLetter : stringChars) {
+            count.put(stringLetter, count.get(stringLetter) + 1);
+        }
+        return count;
+    }
 }

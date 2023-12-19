@@ -3,7 +3,7 @@ package com.guscodes.scrabby.lexicon;
 import java.io.InputStream;
 import java.util.*;
 
-public class WordHandler {
+public class DictHandler {
     private Map<String, String> definedDictionary = new HashMap<>();
     private Trie dictTrie;
     private Map<Character, Double> frequencyTable = new HashMap<>();

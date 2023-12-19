@@ -1,9 +1,10 @@
 package com.guscodes.scrabby.generation;
 
 import com.guscodes.scrabby.Data;
+import com.guscodes.scrabby.Utils;
 import com.guscodes.scrabby.gameitems.Word;
 import com.guscodes.scrabby.gameitems.Board;
-import com.guscodes.scrabby.lexicon.WordHandler;
+import com.guscodes.scrabby.lexicon.DictHandler;
 
 import java.util.*;
 
@@ -37,32 +38,39 @@ public class Strategist {
             however this is still more beneficial than keeping a Q on the rack.
     */
     private Board board;
-    private final WordHandler wordHandler;
+    private final DictHandler dictHandler;
     private final Map<Character, Double> frequencyTable;
     //flags
-    boolean efficientBlankUsage = false;
-    boolean preferLowerRackScore = false;
+    boolean efficientBlankUsage = true;
+    boolean preferLowerRackScore = true;
     boolean useTrayLeaveRating = true;
 
-    public Strategist(WordHandler wordHandler) {
-        this.wordHandler = wordHandler;
-        this.frequencyTable = wordHandler.getFrequencyTable();
+    public Strategist(DictHandler dictHandler) {
+        this.dictHandler = dictHandler;
+        this.frequencyTable = dictHandler.getFrequencyTable();
     }
     public Set<Word> getStrategicRatings(Set<Word> words, String originalTray, Board board, double testParameter) {
         this.board = board;
         boolean isEndGame = board.getPlayedLocations().size() > 82;
+        Map<Character, Integer> unseenTiles = new HashMap<>(board.getUnseenTiles());
         //System.out.printf("Endgame: %b\n", isEndGame);
         for (Word word : words) {
 
-            // System.out.printf("%s old rating: %d\n", word.getWord(), word.getRating());
+            //System.out.printf("%s old rating: %d\n", word.getWord(), word.getRating());
             if (! isEndGame) {
                 if (efficientBlankUsage) {
                     word.modifyRatingByMultiplier(rateBlankUsage(word));
                 }
 
                 if (useTrayLeaveRating) {
-                    double modifier = rateTrayLeave(originalTray, word.getTrayLettersUsed());
-                    // System.out.println("Tray leave rated: " + modifier);
+                    Map<Character, Integer> unseenForWord = new HashMap<>(unseenTiles);
+                    for (char tile : originalTray.toCharArray()) {
+                        unseenForWord.put(tile, unseenTiles.get(tile) - 1);
+                    }
+                    String trayLeave = getTrayLeave(originalTray, word.getTrayLettersUsed());
+                    Map<Character, Integer> trayLeaveCounter = Utils.counter(trayLeave);
+                    List<String> trayLeaveLetters = Arrays.asList(trayLeave.split(""));
+                    double modifier = getLeaveRating(trayLeaveCounter, trayLeaveLetters, unseenForWord);
                     word.modifyRatingByMultiplier(1 + (modifier * testParameter));
                 }
             }
@@ -72,7 +80,7 @@ public class Strategist {
                     word.modifyRatingByMultiplier(1 + (rateRemainingTrayInEndgame(word) * 0.5));
                 }
             }
-            // System.out.printf("%s new rating: %d\n", word.getWord(), word.getRating());
+            //System.out.printf("%s new rating: %d\n", word.getWord(), word.getRating());
         }
 
         return words;
@@ -98,13 +106,9 @@ public class Strategist {
         return fromTrayTotalPoints;
     }
 
-    private double rateTrayLeave(String originalTray, List<String> usedTiles) {
-        Map<Character, Integer> unseenTiles = board.getUnseenTiles();
-        for (String tile : usedTiles) {
-            char tileChar = tile.charAt(0);
-            unseenTiles.put(tileChar, unseenTiles.get(tileChar) - 1);
-        }
-
+    private double getLeaveRating(Map<Character, Integer> trayLeaveCounter, List<String> trayLeave,
+                                                                                Map<Character, Integer> unseenTiles) {
+        // obtain total quantity of tiles as yet unseen by the player
         double unseenTileTotalValue = 0;
         int totalTilesRemaining = 0;
         for (char tile : unseenTiles.keySet()) {
@@ -113,27 +117,34 @@ public class Strategist {
             unseenTileTotalValue += frequencyTable.get(tile);
         }
 
+        // for any open spaces in the rack, fill them with a theoretical tile of average value for word building
         double averageUnseenTileValue = unseenTileTotalValue / totalTilesRemaining;
-        // System.out.printf("%d tiles are still to be seen, average value: %f\n", totalTilesRemaining, averageUnseenTileValue);
+        int newTileSlotsInTray = Data.MAX_TRAY_SIZE - trayLeave.size();
 
-        int newTileSlotsInTray = Data.MAX_TRAY_SIZE - usedTiles.size();
+        double leaveRating = newTileSlotsInTray * averageUnseenTileValue;
 
-        double trayRating = newTileSlotsInTray * averageUnseenTileValue;
-        // System.out.println("Tray base rating is: " + trayRating);
-        String remainingTray = getTrayLeave(originalTray, usedTiles);
-
-        if (remainingTray.length() > 0) {
-            List<String> remainingTiles = Arrays.asList(remainingTray.strip().split(""));
-            Set<String> tilesInTray = new HashSet<>();
-            for (String tile : remainingTiles) {
-                if (! tilesInTray.contains(tile)) {
-                    trayRating += frequencyTable.get(tile.charAt(0));
-                    tilesInTray.add(tile);
+        // don't try to analyse the individual tiles on an empty tray
+        if (trayLeave.size() != 0) {
+            for (Character tile : trayLeaveCounter.keySet()) {
+                if (trayLeaveCounter.get(tile) == 1) {
+                    leaveRating += frequencyTable.get(tile);
+                    // TODO: penalise repeated letter more
+                    // TODO: reward rack balance 4 consonant to 3 vowel
                 }
             }
 
+            // reward holding specific useful combinations of tile on the rack
+            Set<Boolean> combosFound = new HashSet<>();
+            combosFound.add(trayLeave.contains("I") && trayLeave.contains("N") && trayLeave.contains("G"));
+            combosFound.add(trayLeave.contains("E") && (trayLeave.contains("D") || trayLeave.contains("R")));
+            combosFound.add(trayLeave.contains("Q") && trayLeave.contains("U"));
+            combosFound.add(trayLeave.contains("S"));
+            for (Boolean combo : combosFound) {
+                if (combo) leaveRating += 0.2; //todo: this constant should be tweaked for best performance, 0.2 is an arbitrary value
+            }
         }
-        return trayRating;
+
+        return leaveRating;
     }
 
     private String getTrayLeave(String originalTray, List<String> tilesUsed) {

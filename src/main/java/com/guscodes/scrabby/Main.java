@@ -6,7 +6,7 @@ import com.guscodes.scrabby.gameitems.Board;
 import com.guscodes.scrabby.gameitems.Word;
 import com.guscodes.scrabby.generation.Generator;
 import com.guscodes.scrabby.generation.MoveFinder;
-import com.guscodes.scrabby.lexicon.WordHandler;
+import com.guscodes.scrabby.lexicon.DictHandler;
 import com.guscodes.scrabby.simulation.SimulatedGame;
 
 import java.util.*;
@@ -14,11 +14,11 @@ import java.util.*;
 public class Main {
     public static void main (String[] args) {
         final Scanner scanner = new Scanner(System.in);
-        final WordHandler wordHandler = new WordHandler();
-        final UserInterface ui = new UserInterface(scanner, wordHandler);
-        wordHandler.buildDefinedDictionary("CSW19DEF.txt");
-        wordHandler.buildLetterFrequencyTable(wordHandler.getDefinedDictionary().keySet());
-        final Validator validator = new Validator(wordHandler);
+        final DictHandler dictHandler = new DictHandler();
+        final UserInterface ui = new UserInterface(scanner, dictHandler);
+        dictHandler.buildDefinedDictionary("CSW19DEF.txt");
+        dictHandler.buildLetterFrequencyTable(dictHandler.getDefinedDictionary().keySet());
+        final Validator validator = new Validator(dictHandler);
         final Scorer scorer = new Scorer();
 
         final String welcomeString = "\nWelcome to Scrabby, your scrabble word finder\n";
@@ -30,9 +30,9 @@ public class Main {
         if (! mode.equals("D")) {
             Board board = new Board(validator, scorer, true, true);
 
-            final MoveFinder moveFinder = new MoveFinder(wordHandler);
+            final MoveFinder moveFinder = new MoveFinder(dictHandler);
             final Generator generator = new Generator(moveFinder, validator, scorer, true,
-                    2, true, wordHandler);
+                    0.097, true, dictHandler);
             Word topRecommendation = new Word("UNSETWORDTOPLAY", new int[]{7, 7}, 'H');
 
             //Main loop
@@ -73,7 +73,7 @@ public class Main {
                                 if (invalidWordAction.equals("A")) {
                                     Set<String> userWords = ui.getUserWordsToAdd();
                                     for (String userWord : userWords) {
-                                        wordHandler.addUserWord(userWord);
+                                        dictHandler.addUserWord(userWord);
                                     }
                                     System.out.println("Try your play again...");
                                 }
@@ -118,7 +118,7 @@ public class Main {
 
         else {
             int maxIterations = ui.getIterationCountFromUser();
-            SimulatedGame sim = new SimulatedGame(wordHandler, validator, scorer);
+            SimulatedGame sim = new SimulatedGame(dictHandler, validator, scorer);
             sim.simulateNGames(maxIterations);
             System.out.println("\n\nSimulations Complete!");
         }

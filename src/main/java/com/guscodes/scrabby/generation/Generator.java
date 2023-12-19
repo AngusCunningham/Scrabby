@@ -5,7 +5,7 @@ import com.guscodes.scrabby.Data;
 import com.guscodes.scrabby.analysis.Scorer;
 import com.guscodes.scrabby.gameitems.Word;
 import com.guscodes.scrabby.gameitems.Board;
-import com.guscodes.scrabby.lexicon.WordHandler;
+import com.guscodes.scrabby.lexicon.DictHandler;
 
 import java.util.*;
 
@@ -21,14 +21,15 @@ public class Generator {
 
     public Generator(MoveFinder moveFinder, Validator validator, Scorer scorer,
                      boolean useStrategicRating, double testParameter, boolean verbose,
-                     WordHandler wordHandler) {
+                     DictHandler dictHandler) {
         this.validator = validator;
         this.scorer = scorer;
         this.useStrategicRating = useStrategicRating;
         this.testParameter = (float) testParameter;
+        if (testParameter == -1000) this.useStrategicRating = false;
         this.moveFinder = moveFinder;
         this.verbose = verbose;
-        this.strategist = new Strategist(wordHandler);
+        this.strategist = new Strategist(dictHandler);
     }
 
     public Set<Word> getSuggestions(String tray, Board board) {

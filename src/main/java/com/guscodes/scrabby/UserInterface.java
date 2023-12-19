@@ -1,17 +1,17 @@
 package com.guscodes.scrabby;
 
 import com.guscodes.scrabby.gameitems.Word;
-import com.guscodes.scrabby.lexicon.WordHandler;
+import com.guscodes.scrabby.lexicon.DictHandler;
 
 import java.util.*;
 
 public class UserInterface {
     Scanner scanner;
-    WordHandler wordHandler;
+    DictHandler dictHandler;
 
-    UserInterface(Scanner scanner, WordHandler wordHandler) {
+    UserInterface(Scanner scanner, DictHandler dictHandler) {
         this.scanner = scanner;
-        this.wordHandler = wordHandler;
+        this.dictHandler = dictHandler;
     }
     String getModeFromUser() {
         //get functionality from user, loop only used to deal with invalid input
@@ -123,7 +123,7 @@ public class UserInterface {
 
         int wordsPassed = 0;
         Word bestWord = null;
-        Map<String, String> definitions = wordHandler.getDefinedDictionary();
+        Map<String, String> definitions = dictHandler.getDefinedDictionary();
         for (Word word : sortedPossibleWords) {
             bestWord = word;
             if (wordsPassed > numberOfSuggestions - 10 || numberOfSuggestions < 10) {

@@ -52,6 +52,20 @@ public class Data {
             TILE_POINTS.put(lowerCaseLetter, 0);
         }
     }
+    private static Map<Character, Integer> TILE_RATINGS = new HashMap<>();
+    static {
+        TILE_RATINGS.put('~', 10);
+        TILE_RATINGS.put('S', 8);
+
+        for (char tile : "ZX".toCharArray()) TILE_RATINGS.put(tile, 7);
+        for (char tile : "ERHMCN".toCharArray()) TILE_RATINGS.put(tile, 6);
+        for (char tile : "DTLAP".toCharArray()) TILE_RATINGS.put(tile, 5);
+        for (char tile : "IKO".toCharArray()) TILE_RATINGS.put(tile, 4);
+        for (char tile : "YJBFG".toCharArray()) TILE_RATINGS.put(tile, 3);
+        for (char tile : "WVU".toCharArray()) TILE_RATINGS.put(tile, 2);
+
+        TILE_RATINGS.put('Q', 1);
+    }
 
     private static Map<Character, Integer> LETTER_COUNTS = new HashMap<>();
     static {
@@ -88,56 +102,5 @@ public class Data {
 
     public static final Map<Character, Integer> LETTER_SCORES = new HashMap<>(TILE_POINTS);
 
+    public static final char EMPTY_SQUARE = '-';
 }
-
-/*
-
-        lettersRemaining.add('X');
-        lettersRemaining.add('Z');
-        lettersRemaining.add('Q');
-        lettersRemaining.add('J');
-        lettersRemaining.add('K');
-
-        for (int i = 0; i < 2; i++) {
-            lettersRemaining.add('B');
-            lettersRemaining.add('C');
-            lettersRemaining.add('M');
-            lettersRemaining.add('F');
-            lettersRemaining.add('H');
-            lettersRemaining.add('P');
-            lettersRemaining.add('V');
-            lettersRemaining.add('W');
-            lettersRemaining.add('Y');
-            lettersRemaining.add('~');
-        }
-
-        for (int i = 0; i < 3; i++) {
-            lettersRemaining.add('G');
-        }
-
-        for (int i = 0; i < 4; i++) {
-            lettersRemaining.add('D');
-            lettersRemaining.add('L');
-            lettersRemaining.add('U');
-            lettersRemaining.add('S');
-        }
-
-        for (int i = 0; i < 6; i++) {
-            lettersRemaining.add('R');
-            lettersRemaining.add('T');
-            lettersRemaining.add('N');
-        }
-
-        for (int i = 0; i < 8; i++) {
-            lettersRemaining.add('O');
-        }
-
-        for (int i = 0; i < 9; i++) {
-            lettersRemaining.add('A');
-            lettersRemaining.add('I');
-        }
-
-        for (int i = 0; i < 12; i++) {
-            lettersRemaining.add('E');
-        }
- */

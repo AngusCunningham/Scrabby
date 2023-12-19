@@ -4,7 +4,7 @@ import com.guscodes.scrabby.gameitems.Board;
 import com.guscodes.scrabby.gameitems.Square;
 import com.guscodes.scrabby.Utils;
 import com.guscodes.scrabby.gameitems.Word;
-import com.guscodes.scrabby.lexicon.WordHandler;
+import com.guscodes.scrabby.lexicon.DictHandler;
 import com.guscodes.scrabby.lexicon.TrieNode;
 
 import java.util.*;
@@ -14,8 +14,8 @@ public class MoveFinder {
     private final Set<Word> wordsFound = new HashSet<>();
     private final TrieNode rootNode;
 
-    public MoveFinder(WordHandler wordHandler) {
-        rootNode = wordHandler.getTrieRoot();
+    public MoveFinder(DictHandler dictHandler) {
+        rootNode = dictHandler.getTrieRoot();
     }
 
     public Set<Word> getAllPossiblePlays(List<String> tray, Board board) {
