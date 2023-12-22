@@ -15,13 +15,15 @@ class ScrabbleBoard implements Board{
     private Set<Play> playedWords = new HashSet<>();
     private List<Board> previousStates = new ArrayList<>();
 
+    private Validator validator;
+
     ScrabbleBoard() {
         for (int i = 0; i < 225; i++) {
             squares[i] = Data.EMPTY_SQUARE;
             if (i == 112) {
                 anchorSquares.add(i);
             }
-            if ((i % 7 == 0 || (i < 120 && i > 104)) && i != 0) {
+            if ((i % 7 == 0 || (i > 104)) && i != 0 && i < 113) {
                 startSquares.add(i);
             }
         }
@@ -31,18 +33,24 @@ class ScrabbleBoard implements Board{
     @Override
     public void makePlay(Play play) {
         // play the word
-        List<Integer> wordSquares = play.getSquares();
-
-        for (int square : wordSquares) {
-            if (squares[square] != Data.EMPTY_SQUARE) {
-                squares[square] = word[i];
+        String word;
+        List<Integer> wordSquares;
+        if (validator.isValid(play, this)) {
+            word = play.getWord();
+            wordSquares = play.getSquares();
+            for (int index = 0; index < wordSquares.size(); index++) {
+                int squareToPlay = wordSquares.get(index);
+                if (squares[squareToPlay] == Data.EMPTY_SQUARE) {
+                    squares[squareToPlay] = word.charAt(index);
+                    playedSquares.add(index);
+                }
             }
+            playedWords.add(play);
         }
-
-        String word = play.getWord();
-        // add the word to the playedWords set
-        // add the squares to the played squares set
-        // update the anchorSquares and startSquares lists
+        else {
+            String exceptionString = "Play " + play.getWord() + " on " + play.getSquares().toString() + " is invalid";
+            throw new IllegalArgumentException(exceptionString);
+        }
     }
 
     @Override
@@ -72,7 +80,7 @@ class ScrabbleBoard implements Board{
 
     @Override
     public char[] getSquares() {
-        char[] boardSquares = new char[255];
+        char[] boardSquares = new char[225];
         for (int i=0; i<225;i++) {
             boardSquares[i] = squares[i];
         }

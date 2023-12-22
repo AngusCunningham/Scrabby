@@ -6,4 +6,7 @@ interface Play {
     String getWord();
     List<Integer> getSquares();
     boolean isVertical();
+    int getScore();
+    int getRating();
+    int getLength();
 }
